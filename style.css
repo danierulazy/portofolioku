@@ -447,3 +447,15 @@ body.player-open{padding-bottom:100px}
 .reveal-ready{opacity:0;transform:translateY(18px);transition:opacity .65s ease,transform .65s cubic-bezier(.2,.7,.2,1)}
 .reveal-ready.revealed{opacity:1;transform:translateY(0)}
 @media(prefers-reduced-motion:reduce){.reveal-ready{opacity:1;transform:none;transition:none}}
+
+
+/* Portfolio collection manager */
+.saved-filter{border-style:dashed!important}
+.saved-filter.active{border-style:solid!important}
+.project-collection-actions{display:flex;gap:8px;flex-wrap:wrap;margin-right:auto}
+.project-utility-btn{padding:10px 13px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);color:var(--text);font:600 9px 'DM Sans';cursor:pointer;transition:.2s}
+.project-utility-btn:hover,.project-utility-btn.is-saved{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--panel))}
+.project-dialog-actions{flex-wrap:wrap;gap:12px}
+.contact-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#copyEmail{cursor:pointer}
+@media(max-width:620px){.project-collection-actions{width:100%;order:2}.project-dialog-actions{align-items:flex-start}.contact-actions{width:100%}}

@@ -295,3 +295,76 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
   });
  }
 })();
+
+
+/* Portfolio Collection Manager — saved projects, share actions and contact helpers */
+(()=>{
+ const STORAGE_KEY='danieru-saved-projects-v1';
+ let saved=new Set();
+ try{const parsed=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');if(Array.isArray(parsed))saved=new Set(parsed.filter(x=>typeof x==='string'));}catch(error){console.warn('Saved projects unavailable:',error);}
+ const cards=$$('.work-card'),count=$('#savedWorksCount'),saveButton=$('#projectSave'),shareButton=$('#projectShare');
+ const getName=card=>$('h3',card)?.textContent.trim()||'Creative project';
+ const persist=()=>{try{localStorage.setItem(STORAGE_KEY,JSON.stringify([...saved]));}catch(error){console.warn('Could not save collection:',error);}updateCount();};
+ function updateCount(){if(count)count.textContent=String(saved.size).padStart(2,'0');}
+ function updateSaveButton(card){
+  if(!saveButton||!card)return;
+  const isSaved=saved.has(getName(card));
+  saveButton.classList.toggle('is-saved',isSaved);
+  saveButton.setAttribute('aria-pressed',String(isSaved));
+  saveButton.textContent=isSaved?'♥ Tersimpan':'♡ Simpan';
+ }
+ function refreshSavedFilter(){
+  const filter=$('#savedWorksFilter');
+  if(filter)filter.querySelector('span').textContent=String(saved.size).padStart(2,'0');
+ }
+ function filterSaved(){
+  const query=$('#searchInput')?.value.toLowerCase().trim()||'';
+  let visible=0;
+  cards.forEach(card=>{
+   const name=getName(card),matches=saved.has(name)&&(!query||(card.dataset.search+' '+card.innerText).toLowerCase().includes(query));
+   card.hidden=!matches;if(matches)visible++;
+  });
+  $('#resultCount').textContent=String(visible).padStart(2,'0')+' SAVED PROJECTS';
+  $('#emptyState').hidden=visible!==0;
+ }
+ const allFilter=$('.filter[data-filter="all"]');
+ $('#savedWorksFilter')?.addEventListener('click',()=>{
+  $$('.filter').forEach(button=>button.classList.remove('active'));
+  $('#savedWorksFilter').classList.add('active');
+  window.__danieruSavedFilter=true;
+  filterSaved();
+ });
+ $$('.filter').filter(button=>button.dataset.filter!=='saved').forEach(button=>button.addEventListener('click',()=>{window.__danieruSavedFilter=false;}));
+ const originalFilter=window.filterWorks;
+ // Keep saved state in sync with the existing project detail dialog.
+ document.addEventListener('click',event=>{
+  if(event.target.closest('#projectSave')){
+   const dialog=$('#projectDialog'),name=$('#projectDialogTitle')?.textContent.trim();
+   if(!name)return;
+   if(saved.has(name))saved.delete(name);else saved.add(name);
+   persist();updateSaveButton(cards.find(card=>getName(card)===name));
+   if(window.__danieruSavedFilter)filterSaved();
+  }
+  if(event.target.closest('#projectShare')){
+   const name=$('#projectDialogTitle')?.textContent.trim()||'Creative project';
+   const url=location.href.split('#')[0]+'#work';
+   const shareData={title:name+' — Danieru Portfolio',text:'Lihat karya '+name+' dari Danieru.',url};
+   if(navigator.share){navigator.share(shareData).catch(()=>{});}
+   else if(navigator.clipboard?.writeText){navigator.clipboard.writeText(url).then(()=>{const b=$('#projectShare');if(b){b.textContent='✓ Link disalin';setTimeout(()=>b.textContent='↗ Bagikan',1500);}}).catch(()=>{});}
+  }
+ });
+ const dialog=$('#projectDialog');
+ if(dialog&&saveButton){
+  const observer=new MutationObserver(()=>{const name=$('#projectDialogTitle')?.textContent.trim();const card=cards.find(item=>getName(item)===name);if(card)updateSaveButton(card);});
+  const title=$('#projectDialogTitle');if(title)observer.observe(title,{childList:true,characterData:true,subtree:true});
+ }
+ updateCount();refreshSavedFilter();
+ $('#copyEmail')?.addEventListener('click',()=>{
+  const button=$('#copyEmail'),email='danierulazy@gmail.com';
+  if(navigator.clipboard?.writeText){navigator.clipboard.writeText(email).then(()=>{button.textContent='✓ Email Tersalin';setTimeout(()=>button.textContent='Salin Email ⧉',1800);}).catch(()=>{button.textContent=email;});}
+  else button.textContent=email;
+ });
+ // Restore saved filter behavior when the user changes search text.
+ $('#searchInput')?.addEventListener('input',()=>{if(window.__danieruSavedFilter)filterSaved();});
+ updateCount();
+})();
