@@ -112,3 +112,23 @@ body[data-theme="onepiece"] .theme-onepiece,body[data-theme="zio"] .theme-zio,bo
 .theme-scene .scene-caption{z-index:20;width:min(90vw,720px);padding:10px 16px;line-height:1.5;text-shadow:0 2px 16px #000;pointer-events:none}
 .scene-zio .scene-caption{bottom:8%}
 .scene-onepiece .scene-caption,.scene-spider .scene-caption{bottom:10%}
+
+
+/* Spider-Verse transition: use the uploaded transparent comic assets. */
+.scene-spider::before{
+ content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+ background:url("https://raw.githubusercontent.com/danierulazy/imagesrcformyprtflio/main/HALFTONE%20COMIC.png") center/cover no-repeat;
+ opacity:.17;mix-blend-mode:screen;
+}
+.scene-spider .web-shot{z-index:2;display:grid;place-items:center;overflow:visible}
+.scene-spider .web-shot img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 12px rgba(103,190,255,.48));mix-blend-mode:screen;pointer-events:none}
+.scene-spider .shot-one{width:min(58vw,680px);height:min(58vw,680px);left:calc(50% - min(29vw,340px));top:calc(50% - min(29vw,340px))}
+.scene-spider .shot-two{width:min(49vw,570px);height:min(49vw,570px);left:calc(50% - min(24.5vw,285px));top:calc(50% - min(24.5vw,285px))}
+.scene-spider .shot-three{width:min(63vw,740px);height:min(63vw,740px);left:calc(50% - min(31.5vw,370px));top:calc(50% - min(31.5vw,370px))}
+.scene-spider .web-core{z-index:5}
+.scene-spider .scene-caption{z-index:6}
+@media(max-width:760px){
+ .scene-spider .shot-one{width:86vw;height:86vw;left:7vw;top:calc(50% - 43vw)}
+ .scene-spider .shot-two{width:72vw;height:72vw;left:14vw;top:calc(50% - 36vw)}
+ .scene-spider .shot-three{width:94vw;height:94vw;left:3vw;top:calc(50% - 47vw)}
+}
