@@ -117,7 +117,7 @@ body[data-theme="onepiece"] .theme-onepiece,body[data-theme="zio"] .theme-zio,bo
 /* Spider-Verse transition: use the uploaded transparent comic assets. */
 .scene-spider::before{
  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
- background:url("https://raw.githubusercontent.com/danierulazy/imagesrcformyprtflio/main/HALFTONE%20COMIC.png") center/cover no-repeat;
+ background:url("https://raw.githubusercontent.com/danierulazy/imagesrcformyprtflio/main/SPIDER_HALFTONE.png") center/cover no-repeat;
  opacity:.17;mix-blend-mode:screen;
 }
 .scene-spider .web-shot{z-index:2;display:grid;place-items:center;overflow:visible}
