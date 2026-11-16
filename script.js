@@ -29,7 +29,7 @@ function showThemeTransition(theme){
  themeTransition.className='theme-transition active show-'+theme;
  if(theme==='zio'){updateZioClock();clearInterval(clockTimer);clockTimer=setInterval(updateZioClock,250);}
  clearTimeout(transitionTimer);
- transitionTimer=setTimeout(()=>{themeTransition.classList.remove('active','show-zio','show-onepiece','show-spider');clearInterval(clockTimer);},3000);
+ transitionTimer=setTimeout(()=>{themeTransition.classList.remove('active','show-zio','show-onepiece','show-spider');clearInterval(clockTimer);},4300);
  
 }
 function applyTheme(theme,animate=true){
