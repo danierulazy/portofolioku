@@ -232,3 +232,66 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
  topButton?.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
  updateScrollUI();
 })();
+
+
+/* Creator Dashboard + Persistent Music Player + Visual polish batch */
+(()=>{
+ const cards=$$('.work-card'),tools=$$('.tool-cloud span'),themeCount=$$('.theme-popover [data-theme-choice]').length;
+ const values={projects:cards.length,fields:4,tools:tools.length,themes:themeCount||5};
+ Object.entries(values).forEach(([key,value])=>{const node=$('[data-stat="'+key+'"]');if(node)node.textContent=String(value).padStart(2,'0');});
+ $$('[data-focus]').forEach(button=>button.addEventListener('click',()=>{
+  const type=button.dataset.focus;
+  const filter=document.querySelector('.filter[data-filter="'+type+'"]');
+  if(filter){filter.click();$('#work')?.scrollIntoView({behavior:'smooth',block:'start'});}
+ }));
+ const audio=$('#audioPlayer'),player=$('#persistentPlayer');
+ if(audio&&player){
+  const trackButtons=$$('.track'),miniTitle=$('#miniTitle'),miniArtist=$('#miniArtist'),miniCover=$('#miniCover');
+  const miniPlay=$('#miniPlay'),seek=$('#miniSeek'),current=$('#miniCurrent'),duration=$('#miniDuration'),volume=$('#miniVolume');
+  const trackOrder=trackButtons.map(b=>b.dataset.track).filter(Boolean);
+  const trackMeta={song1:{title:'Letdown',artist:'Radiohead',cover:'https://raw.githubusercontent.com/danierulazy/portofolio/main/cover1.png'},song2:{title:'Impostor Syndrome',artist:'Sidney Gish',cover:'https://raw.githubusercontent.com/danierulazy/portofolio/main/cover2.png'}};
+  let dismissed=false,seeking=false;
+  const formatTime=value=>{if(!Number.isFinite(value))return'0:00';const m=Math.floor(value/60),s=Math.floor(value%60);return m+':'+String(s).padStart(2,'0');};
+  function syncTrack(){
+   const source=audio.currentSrc||audio.src;
+   const id=trackOrder.find(key=>source.includes('/'+key+'.mp3'));
+   const meta=trackMeta[id];
+   if(meta){miniTitle.textContent=meta.title;miniArtist.textContent=meta.artist;miniCover.src=meta.cover;}
+   trackButtons.forEach(button=>{const active=!!id&&button.dataset.track===id;button.classList.toggle('active',active);const icon=$('.track-action',button);if(icon)icon.textContent=active&&!audio.paused?'Ⅱ':'▶';});
+   miniPlay.textContent=audio.paused?'▶':'Ⅱ';
+   $('#nowPlaying').textContent=meta?meta.title+' — '+meta.artist:'Pilih lagu untuk memutar';
+  }
+  function showPlayer(){if(!dismissed){player.classList.add('visible');document.body.classList.add('player-open');}}
+  function hidePlayer(){player.classList.remove('visible');document.body.classList.remove('player-open');dismissed=true;}
+  audio.addEventListener('play',()=>{showPlayer();syncTrack();$('#audioStatus').textContent='NOW PLAYING';});
+  audio.addEventListener('pause',()=>{syncTrack();if(!audio.ended)$('#audioStatus').textContent='PAUSED';});
+  audio.addEventListener('loadedmetadata',()=>{duration.textContent=formatTime(audio.duration);});
+  audio.addEventListener('timeupdate',()=>{current.textContent=formatTime(audio.currentTime);if(!seeking&&Number.isFinite(audio.duration)&&audio.duration>0)seek.value=String(Math.round(audio.currentTime/audio.duration*1000));});
+  audio.addEventListener('ended',()=>{syncTrack();const index=trackOrder.findIndex(key=>audio.currentSrc.includes('/'+key+'.mp3'));if(index>=0&&index<trackOrder.length-1){const next=document.querySelector('.track[data-track="'+trackOrder[index+1]+'"]');next?.click();}else $('#audioStatus').textContent='FINISHED';});
+  miniPlay.addEventListener('click',()=>{if(!audio.src){trackButtons[0]?.click();return;}if(audio.paused)audio.play().catch(()=>{});else audio.pause();});
+  function changeTrack(direction){const index=trackOrder.findIndex(key=>(audio.currentSrc||audio.src).includes('/'+key+'.mp3'));const nextIndex=(index+direction+trackOrder.length)%trackOrder.length;const button=document.querySelector('.track[data-track="'+trackOrder[nextIndex]+'"]');if(button)button.click();}
+  $('#miniPrev')?.addEventListener('click',()=>changeTrack(-1));
+  $('#miniNext')?.addEventListener('click',()=>changeTrack(1));
+  seek.addEventListener('input',()=>{seeking=true;if(Number.isFinite(audio.duration)){const time=Number(seek.value)/1000*audio.duration;current.textContent=formatTime(time);}});
+  seek.addEventListener('change',()=>{if(Number.isFinite(audio.duration))audio.currentTime=Number(seek.value)/1000*audio.duration;seeking=false;});
+  volume.addEventListener('input',()=>{audio.volume=Number(volume.value);});
+  audio.volume=.8;
+  $('#miniClose')?.addEventListener('click',hidePlayer);
+  trackButtons.forEach(button=>button.addEventListener('click',()=>{dismissed=false;}));
+ }
+ // Subtle reveal-on-scroll; no external animation library required.
+ const revealTargets=$$('.section-head,.about-card,.fact,.work-card,.skill-row,.tool-panel,.playlist-panel,.game-card,.social-grid>a,.contact-card,.dashboard-stat');
+ if('IntersectionObserver'in window){
+  revealTargets.forEach(el=>el.classList.add('reveal-ready'));
+  const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('revealed');observer.unobserve(entry.target);}}),{threshold:.12,rootMargin:'0px 0px -35px 0px'});
+  revealTargets.forEach(el=>observer.observe(el));
+ }else revealTargets.forEach(el=>el.classList.add('revealed'));
+ // Pointer tilt is deliberately restrained and disabled for touch / reduced-motion devices.
+ const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ if(!reduceMotion&&window.matchMedia('(pointer:fine)').matches){
+  $$('.work-card,.dashboard-stat,.game-card').forEach(card=>{
+   card.addEventListener('pointermove',event=>{const rect=card.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width-.5,y=(event.clientY-rect.top)/rect.height-.5;card.style.transform='perspective(850px) rotateX('+(-y*3)+'deg) rotateY('+(x*3)+'deg) translateY(-2px)';});
+   card.addEventListener('pointerleave',()=>{card.style.transform='';});
+  });
+ }
+})();
