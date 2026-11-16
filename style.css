@@ -266,21 +266,21 @@ body[data-theme="onepiece"] .theme-onepiece,body[data-theme="zio"] .theme-zio,bo
  18%{opacity:1}
  68%{opacity:1;transform:translate(0,0) rotate(-9deg) scale(1.04)}
  82%{opacity:1;transform:translate(0,0) rotate(-8deg) scale(1)}
- 100%{opacity:0;transform:translate(0,0) rotate(-8deg) scale(1)}
+ 100%{opacity:1;transform:translate(0,0) rotate(-8deg) scale(1)}
 }
 @keyframes onepiece-poster-center{
  0%{opacity:0;transform:translateY(-120vh) rotate(28deg) scale(.6)}
  18%{opacity:1}
  68%{opacity:1;transform:translateY(0) rotate(5deg) scale(1.06)}
  82%{opacity:1;transform:translateY(0) rotate(3deg) scale(1)}
- 100%{opacity:0;transform:translateY(0) rotate(3deg) scale(1)}
+ 100%{opacity:1;transform:translateY(0) rotate(3deg) scale(1)}
 }
 @keyframes onepiece-poster-right{
  0%{opacity:0;transform:translate(115vw,45vh) rotate(42deg) scale(.55)}
  18%{opacity:1}
  68%{opacity:1;transform:translate(0,0) rotate(9deg) scale(1.04)}
  82%{opacity:1;transform:translate(0,0) rotate(8deg) scale(1)}
- 100%{opacity:0;transform:translate(0,0) rotate(8deg) scale(1)}
+ 100%{opacity:1;transform:translate(0,0) rotate(8deg) scale(1)}
 }
 @media(max-width:760px){
  .theme-transition.show-onepiece .scene-onepiece .poster-a{left:2%!important;top:35%!important}
