@@ -69,3 +69,63 @@ const audio=$('#audioPlayer');const tracks={song1:{title:'Letdown',artist:'Radio
 $$('.track').forEach(btn=>btn.addEventListener('click',()=>{const track=tracks[btn.dataset.track];if(!track)return;if(audio.src===track.src&&!audio.paused){audio.pause();btn.querySelector('.track-action').textContent='▶';$('#audioStatus').textContent='PAUSED';return;}audio.src=track.src;audio.play().then(()=>{$$('.track').forEach(b=>{b.classList.remove('active');b.querySelector('.track-action').textContent='▶';});btn.classList.add('active');btn.querySelector('.track-action').textContent='Ⅱ';$('#nowPlaying').textContent=track.title+' — '+track.artist;$('#audioStatus').textContent='NOW PLAYING';}).catch(()=>{$('#audioStatus').textContent='GAGAL MEMUAT AUDIO';});}));
 audio.addEventListener('ended',()=>{$$('.track-action').forEach(x=>x.textContent='▶');$('#audioStatus').textContent='FINISHED';});
 const sections=$$('main .section');const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){const id=entry.target.id;$$('.nav-link').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+id));$('#currentSection').textContent=id.toUpperCase();}}),{rootMargin:'-35% 0px -55% 0px'});sections.forEach(s=>observer.observe(s));
+
+
+/* Project detail viewer: keyboard-accessible native dialog with previous/next navigation. */
+(()=>{
+ const dialog=$('#projectDialog');
+ if(!dialog)return;
+ const image=$('#projectDialogImage'),title=$('#projectDialogTitle'),description=$('#projectDialogDescription');
+ const category=$('#projectDialogCategory'),tools=$('#projectDialogTools'),type=$('#projectDialogType');
+ const link=$('#projectDialogLink'),counter=$('#projectCounter');
+ const cards=()=>$$('.work-card').filter(card=>!card.hidden);
+ let activeCard=null;
+ const detailCopy={
+  'GFX Design':{description:'Eksplorasi desain grafis bertema anime dengan fokus pada komposisi, tipografi, warna, dan penyusunan elemen visual.',tools:'Graphic design · Digital tools'},
+  'Photography':{description:'Kumpulan eksplorasi fotografi yang menonjolkan komposisi, pencahayaan, dan cara menangkap momen.',tools:'Camera · Composition · Lighting'},
+  'School Project':{description:'Proyek video sekolah yang menggabungkan dokumentasi, penyuntingan, dan storytelling visual.',tools:'Video editing · Storytelling'},
+  'Motion Graphic':{description:'Eksperimen visual bergerak untuk mengeksplorasi ritme, transisi, dan animasi grafis.',tools:'Motion design · Animation'},
+  'Gaming Video':{description:'Konten video gaming dengan pendekatan editing dan storytelling yang ringan.',tools:'Video editing · YouTube'}
+ };
+ function render(card){
+  if(!card)return;
+  activeCard=card;
+  const heading=$('h3',card),preview=$('.work-image img',card),kind=$('.work-type',card);
+  const name=heading?.textContent.trim()||'Creative project';
+  const details=detailCopy[name]||{description:'Eksplorasi karya kreatif dari Danieru.',tools:'Creative process'};
+  title.textContent=name;
+  description.textContent=details.description;
+  tools.textContent=details.tools;
+  type.textContent=card.dataset.category||'creative';
+  category.textContent=kind?.textContent||'CREATIVE PROJECT';
+  image.src=preview?.currentSrc||preview?.src||'';
+  image.alt=preview?.alt||name;
+  const external=$('a[href]',card);
+  if(external){link.href=external.href;link.hidden=false;link.textContent=card.dataset.category==='video'?'Watch video ↗':'Open project ↗';}
+  else{link.hidden=true;link.removeAttribute('href');}
+  const list=cards(),index=list.indexOf(card);
+  counter.textContent=String(index+1).padStart(2,'0')+' / '+String(list.length).padStart(2,'0');
+ }
+ function open(card){render(card);if(!dialog.open)dialog.showModal();}
+ function step(direction){const list=cards();if(!list.length)return;let index=list.indexOf(activeCard);index=(index+direction+list.length)%list.length;render(list[index]);}
+ $$('.work-card').forEach(card=>{
+  card.setAttribute('tabindex','0');card.setAttribute('role','button');
+  card.setAttribute('aria-label','Lihat detail '+($('h3',card)?.textContent.trim()||'proyek'));
+ });
+ $('.work-grid')?.addEventListener('click',event=>{
+  const card=event.target.closest('.work-card');
+  if(!card||event.target.closest('a'))return;
+  open(card);
+ });
+ $('.work-grid')?.addEventListener('keydown',event=>{
+  const card=event.target.closest('.work-card');
+  if(!card||event.target.closest('a'))return;
+  if(event.key==='Enter'||event.key===' '){event.preventDefault();open(card);}
+ });
+ $('#projectClose')?.addEventListener('click',()=>dialog.close());
+ $('#projectPrev')?.addEventListener('click',()=>step(-1));
+ $('#projectNext')?.addEventListener('click',()=>step(1));
+ dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});
+ dialog.addEventListener('close',()=>{activeCard?.focus({preventScroll:true});});
+ document.addEventListener('keydown',event=>{if(!dialog.open)return;if(event.key==='ArrowLeft'){event.preventDefault();step(-1);}if(event.key==='ArrowRight'){event.preventDefault();step(1);}});
+})();
