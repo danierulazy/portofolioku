@@ -150,3 +150,85 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
  $('#quickPrev')?.addEventListener('click',()=>quickTrack?.scrollBy({left:-quickTrack.clientWidth*.8,behavior:'smooth'}));
  $('#quickNext')?.addEventListener('click',()=>quickTrack?.scrollBy({left:quickTrack.clientWidth*.8,behavior:'smooth'}));
 })();
+
+
+/* Smart Navigation + Command Center batch */
+(()=>{
+ const palette=$('#commandPalette'),input=$('#commandInput'),results=$('#commandResults');
+ if(!palette||!input||!results)return;
+ const sections=[
+  {id:'home',title:'Beranda',desc:'Kembali ke halaman utama',icon:'⌂'},
+  {id:'about',title:'Tentang Saya',desc:'Profil dan perjalanan kreatif',icon:'◉'},
+  {id:'work',title:'Portfolio',desc:'Jelajahi seluruh karya',icon:'▧'},
+  {id:'skills',title:'Keahlian',desc:'Skill dan creative tools',icon:'✳'},
+  {id:'music',title:'Music Space',desc:'Playlist dan pemutar musik',icon:'♫'},
+  {id:'games',title:'Games',desc:'Game dan hiburan',icon:'◈'},
+  {id:'social',title:'Sosial Media',desc:'Temukan akun sosial',icon:'◎'},
+  {id:'contact',title:'Kontak',desc:'Hubungi Ahmad Danil',icon:'↗'}
+ ];
+ const themeNames={dark:'Dark Modern',light:'Light Clean',onepiece:'One Piece / Grand Line',zio:'Kamen Rider Zi-O',spider:'Spider-Verse'};
+ let items=[],activeIndex=0;
+ const normalize=s=>(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+ function fuzzyScore(query,target){
+  const q=normalize(query),t=normalize(target);
+  if(!q)return 1;
+  if(t.includes(q))return 100-q.length;
+  let qi=0,score=0,last=-1;
+  for(let i=0;i<t.length&&qi<q.length;i++)if(t[i]===q[qi]){score+=last===i-1?5:2;last=i;qi++;}
+  return qi===q.length?score-q.length*0.2:0;
+ }
+ function buildItems(){
+  items=[];
+  sections.forEach(s=>items.push({title:s.title,desc:s.desc,icon:s.icon,keywords:s.id+' navigation section',run:()=>goTo(s.id)}));
+  $$('.work-card').forEach(card=>{const name=$('h3',card)?.textContent.trim()||'Project';items.push({title:name,desc:'Buka detail karya · '+(card.dataset.category||'creative'),icon:'▣',keywords:(card.dataset.search||'')+' '+card.innerText,run:()=>{card.hidden=false;$$('.filter').forEach(b=>b.classList.toggle('active',b.dataset.filter==='all'));document.querySelector('.filter[data-filter="all"]')?.click();card.scrollIntoView({behavior:'smooth',block:'center'});card.click();}});});
+  Object.entries(themeNames).forEach(([key,name])=>items.push({title:'Tema: '+name,desc:'Ganti tampilan website',icon:'◐',keywords:'theme appearance color '+key,run:()=>applyTheme(key,true)}));
+  items.push({title:'Kembali ke atas',desc:'Scroll ke bagian paling atas',icon:'↑',keywords:'top home scroll up',run:()=>window.scrollTo({top:0,behavior:'smooth'})});
+  items.push({title:'Bersihkan pencarian',desc:'Hapus pencarian dan tampilkan semua karya',icon:'⌕',keywords:'clear reset search filter',run:()=>{const search=$('#searchInput');if(search){search.value='';search.dispatchEvent(new Event('input',{bubbles:true}));}document.querySelector('.filter[data-filter="all"]')?.click();goTo('work');}});
+ }
+ function goTo(id){const el=document.getElementById(id);if(el){el.scrollIntoView({behavior:'smooth',block:'start'});history.replaceState(null,'','#'+id);}}
+ function render(){
+  const q=input.value.trim();
+  const matches=items.map((item,index)=>({item,index,score:fuzzyScore(q,item.title+' '+item.desc+' '+item.keywords)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score||a.index-b.index).slice(0,9);
+  activeIndex=0;
+  results.innerHTML='';
+  if(!matches.length){results.innerHTML='<div class="command-empty">Tidak ada hasil. Coba kata kunci lain.</div>';return;}
+  matches.forEach((match,i)=>{
+   const button=document.createElement('button');button.type='button';button.className='command-item'+(i===0?' active':'');button.setAttribute('role','option');button.setAttribute('aria-selected',String(i===0));
+   button.innerHTML='<span class="command-icon"></span><span class="command-item-copy"><b></b><small></small></span><kbd>↵</kbd>';
+   $('.command-icon',button).textContent=match.item.icon;$('.command-item-copy b',button).textContent=match.item.title;$('.command-item-copy small',button).textContent=match.item.desc;
+   button.addEventListener('click',()=>execute(match.item));results.append(button);
+  });
+ }
+ function execute(item){palette.close();item.run();}
+ function setActive(next){const buttons=$$('.command-item',results);if(!buttons.length)return;activeIndex=(next+buttons.length)%buttons.length;buttons.forEach((b,i)=>{b.classList.toggle('active',i===activeIndex);b.setAttribute('aria-selected',String(i===activeIndex));});buttons[activeIndex].scrollIntoView({block:'nearest'});}
+ function open(){buildItems();input.value='';render();if(!palette.open)palette.showModal();requestAnimationFrame(()=>input.focus());}
+ document.addEventListener('keydown',event=>{
+  if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='k'){event.preventDefault();if(palette.open)palette.close();else open();}
+  if(event.key==='/'&&!palette.open&&!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)&&!document.activeElement.isContentEditable){event.preventDefault();$('#searchInput')?.focus();}
+  if(!palette.open)return;
+  if(event.key==='ArrowDown'){event.preventDefault();setActive(activeIndex+1);}
+  if(event.key==='ArrowUp'){event.preventDefault();setActive(activeIndex-1);}
+  if(event.key==='Enter'){event.preventDefault();const active=$('.command-item.active',results);active?.click();}
+ });
+ input.addEventListener('input',render);
+ palette.addEventListener('click',event=>{if(event.target===palette)palette.close();});
+ document.addEventListener('click',event=>{
+  const anchor=event.target.closest('a[href^="#"]');
+  if(!anchor)return;
+  const id=anchor.getAttribute('href').slice(1),target=document.getElementById(id);
+  if(target){event.preventDefault();goTo(id);sidebar?.classList.remove('open');}
+ });
+ const progress=$('#readingProgress'),topButton=$('#backToTop');
+ let scheduled=false;
+ function updateScrollUI(){
+  const max=document.documentElement.scrollHeight-window.innerHeight;
+  const percent=max>0?(window.scrollY/max)*100:0;
+  if(progress)progress.style.width=percent+'%';
+  if(topButton)topButton.classList.toggle('visible',window.scrollY>480);
+  scheduled=false;
+ }
+ window.addEventListener('scroll',()=>{if(!scheduled){scheduled=true;requestAnimationFrame(updateScrollUI);}},{passive:true});
+ window.addEventListener('resize',updateScrollUI,{passive:true});
+ topButton?.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+ updateScrollUI();
+})();
