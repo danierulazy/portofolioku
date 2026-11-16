@@ -239,3 +239,55 @@ body[data-theme="onepiece"] .theme-onepiece,body[data-theme="zio"] .theme-zio,bo
 @media(prefers-reduced-motion:reduce){
  .scene-spider .spider-asset{animation:none!important;opacity:1!important}
 }
+
+
+/* One Piece transition repair: restart poster fly-ins when the theme is selected. */
+.scene-onepiece .wanted-poster{
+ position:absolute!important;display:block!important;object-fit:contain!important;
+ width:clamp(145px,20vw,245px)!important;height:clamp(205px,29vw,330px)!important;
+ padding:0!important;border:0!important;background:transparent!important;
+ box-shadow:0 18px 48px rgba(0,0,0,.48)!important;
+ opacity:0;visibility:visible;z-index:10;will-change:transform,opacity;
+}
+.theme-transition.show-onepiece .scene-onepiece .poster-a{
+ left:13%!important;top:32%!important;
+ animation:onepiece-poster-left 2.8s cubic-bezier(.16,.8,.2,1) .05s both!important;
+}
+.theme-transition.show-onepiece .scene-onepiece .poster-b{
+ left:calc(50% - clamp(72px,10vw,122px))!important;top:28%!important;
+ animation:onepiece-poster-center 2.9s cubic-bezier(.16,.8,.2,1) .18s both!important;
+}
+.theme-transition.show-onepiece .scene-onepiece .poster-c{
+ right:13%!important;top:34%!important;
+ animation:onepiece-poster-right 2.75s cubic-bezier(.16,.8,.2,1) .3s both!important;
+}
+@keyframes onepiece-poster-left{
+ 0%{opacity:0;transform:translate(-115vw,-45vh) rotate(-38deg) scale(.55)}
+ 18%{opacity:1}
+ 68%{opacity:1;transform:translate(0,0) rotate(-9deg) scale(1.04)}
+ 82%{opacity:1;transform:translate(0,0) rotate(-8deg) scale(1)}
+ 100%{opacity:0;transform:translate(0,0) rotate(-8deg) scale(1)}
+}
+@keyframes onepiece-poster-center{
+ 0%{opacity:0;transform:translateY(-120vh) rotate(28deg) scale(.6)}
+ 18%{opacity:1}
+ 68%{opacity:1;transform:translateY(0) rotate(5deg) scale(1.06)}
+ 82%{opacity:1;transform:translateY(0) rotate(3deg) scale(1)}
+ 100%{opacity:0;transform:translateY(0) rotate(3deg) scale(1)}
+}
+@keyframes onepiece-poster-right{
+ 0%{opacity:0;transform:translate(115vw,45vh) rotate(42deg) scale(.55)}
+ 18%{opacity:1}
+ 68%{opacity:1;transform:translate(0,0) rotate(9deg) scale(1.04)}
+ 82%{opacity:1;transform:translate(0,0) rotate(8deg) scale(1)}
+ 100%{opacity:0;transform:translate(0,0) rotate(8deg) scale(1)}
+}
+@media(max-width:760px){
+ .theme-transition.show-onepiece .scene-onepiece .poster-a{left:2%!important;top:35%!important}
+ .theme-transition.show-onepiece .scene-onepiece .poster-b{left:calc(50% - 20vw)!important;top:31%!important}
+ .theme-transition.show-onepiece .scene-onepiece .poster-c{right:2%!important;top:37%!important}
+ .scene-onepiece .wanted-poster{width:clamp(105px,29vw,150px)!important;height:clamp(150px,42vw,215px)!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .theme-transition.show-onepiece .scene-onepiece .wanted-poster{animation:none!important;opacity:1!important}
+}
