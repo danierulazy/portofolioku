@@ -62,3 +62,44 @@ body[data-theme="onepiece"] .theme-onepiece,body[data-theme="zio"] .theme-zio,bo
 @keyframes web-shoot{0%{transform:scale(.02) rotate(-25deg);opacity:0}65%{transform:scale(1.08) rotate(3deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}@keyframes core-pop{0%{transform:scale(2);opacity:0}100%{transform:scale(1);opacity:1}}
 @media(max-width:760px){.portrait-frame{height:350px;width:260px;grid-template-rows:22px minmax(0,1fr) 31px;padding:10px}.portrait-frame .portrait-caption{font-size:6px;letter-spacing:.7px}.poster-a{left:3%;top:34%}.poster-b{left:calc(50% - 75px);top:36%}.poster-c{right:3%;top:35%}.wanted-poster{width:clamp(100px,29vw,150px);height:clamp(150px,42vw,210px);padding:8px}.scene-caption{bottom:17%;font-size:8px;letter-spacing:2px}}
 @media(prefers-reduced-motion:reduce){.theme-scene,.wanted-poster,.zio-clock,.web-burst,.web-core{animation:none!important;transition:none!important}}
+
+
+/* Theme transition polish v2 */
+.theme-transition{background:rgba(3,5,12,.84);backdrop-filter:blur(11px)}
+.theme-scene{transform:none}
+.theme-transition.active .scene-zio,.theme-transition.active .scene-onepiece,.theme-transition.active .scene-spider{opacity:1}
+.zio-clock{width:min(72vw,480px);background:radial-gradient(circle,#291633 0 52%,#100b19 53% 66%,transparent 67%);padding-top:0;gap:8px;animation:clock-arrive .9s cubic-bezier(.16,.8,.2,1) both}
+.clock-ring{inset:12px;border-width:3px;animation:clock-spin 9s linear infinite}
+.clock-face{position:absolute;top:9%;width:62%;aspect-ratio:1;border:1px solid rgba(237,53,167,.42);border-radius:50%;background:radial-gradient(circle,rgba(237,53,167,.12),rgba(10,7,17,.2) 65%,transparent 66%);box-shadow:inset 0 0 25px rgba(237,53,167,.12),0 0 25px rgba(237,53,167,.12)}
+.clock-tick{position:absolute;left:50%;top:5%;width:2px;height:9px;background:#e7c75b;transform-origin:50% 290%}
+.tick-1{transform:translateX(-50%) rotate(0deg)}.tick-2{transform:translateX(-50%) rotate(30deg)}.tick-3{transform:translateX(-50%) rotate(60deg)}.tick-4{transform:translateX(-50%) rotate(90deg)}.tick-5{transform:translateX(-50%) rotate(120deg)}.tick-6{transform:translateX(-50%) rotate(150deg)}.tick-7{transform:translateX(-50%) rotate(180deg)}.tick-8{transform:translateX(-50%) rotate(210deg)}.tick-9{transform:translateX(-50%) rotate(240deg)}.tick-10{transform:translateX(-50%) rotate(270deg)}.tick-11{transform:translateX(-50%) rotate(300deg)}.tick-12{transform:translateX(-50%) rotate(330deg)}
+.clock-hand{position:absolute;left:50%;bottom:50%;display:block;border-radius:8px;transform-origin:50% 100%;z-index:2}
+.hour-hand{width:5px;height:24%;background:#f4d66c;margin-left:-2.5px}
+.minute-hand{width:3px;height:34%;background:#f6e9fa;margin-left:-1.5px}
+.second-hand{width:2px;height:39%;background:#ed35a7;margin-left:-1px}
+.clock-pin{position:absolute;left:50%;top:50%;width:10px;height:10px;border-radius:50%;background:#f4d66c;transform:translate(-50%,-50%);z-index:3;box-shadow:0 0 12px #ed35a7}
+.clock-label{position:relative;margin-top:62%;z-index:2}
+.clock-time{position:relative;z-index:2;margin:0;font-size:clamp(32px,7vw,60px)}
+.clock-date{position:relative;z-index:2}
+.clock-center{bottom:7%;font-size:18px}
+.scene-onepiece{perspective:1000px}
+.wanted-poster{will-change:transform,opacity;backface-visibility:hidden}
+.poster-a{left:18%;top:50%;animation:poster-impact-a 3.65s cubic-bezier(.18,.82,.2,1) both}
+.poster-b{left:calc(50% - 100px);top:50%;animation:poster-impact-b 3.8s cubic-bezier(.18,.82,.2,1) .08s both}
+.poster-c{right:18%;top:50%;animation:poster-impact-c 3.7s cubic-bezier(.18,.82,.2,1) .16s both}
+@keyframes poster-impact-a{0%{transform:translate(-110vw,-65vh) rotate(-75deg) scale(.55);opacity:0}48%{transform:translate(10px,-20px) rotate(13deg) scale(1.08);opacity:1}57%{transform:translate(0,0) rotate(-9deg) scale(.94)}64%{transform:translate(0,0) rotate(-7deg) scale(1.02)}72%,88%{transform:translate(0,0) rotate(-7deg) scale(1)}100%{transform:translate(-12px,45px) rotate(-13deg) scale(.94);opacity:0}}
+@keyframes poster-impact-b{0%{transform:translateY(-120vh) rotate(55deg) scale(.5);opacity:0}48%{transform:translateY(12px) rotate(-11deg) scale(1.1);opacity:1}57%{transform:translateY(0) rotate(6deg) scale(.93)}65%{transform:translateY(0) rotate(2deg) scale(1.03)}73%,88%{transform:translateY(0) rotate(2deg) scale(1)}100%{transform:translateY(40px) rotate(7deg) scale(.94);opacity:0}}
+@keyframes poster-impact-c{0%{transform:translate(110vw,65vh) rotate(75deg) scale(.55);opacity:0}48%{transform:translate(-10px,-15px) rotate(-13deg) scale(1.08);opacity:1}57%{transform:translate(0,0) rotate(10deg) scale(.94)}65%{transform:translate(0,0) rotate(7deg) scale(1.02)}73%,88%{transform:translate(0,0) rotate(7deg) scale(1)}100%{transform:translate(12px,45px) rotate(13deg) scale(.94);opacity:0}}
+.scene-spider{perspective:900px}
+.web-shot{position:absolute;width:min(42vw,330px);aspect-ratio:1;color:#eaf4ff;opacity:0;filter:drop-shadow(0 0 13px #55aaff);will-change:transform,opacity}
+.web-shot svg{width:100%;height:100%}
+.shot-one{left:calc(50% - min(21vw,165px));top:calc(50% - min(21vw,165px));animation:web-hit-one 2.5s cubic-bezier(.12,.72,.2,1) both}
+.shot-two{left:calc(50% - min(21vw,165px));top:calc(50% - min(21vw,165px));animation:web-hit-two 2.65s .28s cubic-bezier(.12,.72,.2,1) both}
+.shot-three{left:calc(50% - min(21vw,165px));top:calc(50% - min(21vw,165px));animation:web-hit-three 2.8s .56s cubic-bezier(.12,.72,.2,1) both}
+@keyframes web-hit-one{0%{transform:translate(-65vw,45vh) scale(.06) rotate(-35deg);opacity:0}18%{opacity:1}48%{transform:translate(0,0) scale(.72) rotate(5deg);opacity:1}58%,68%{transform:translate(0,0) scale(.76) rotate(0);opacity:.9}100%{transform:translate(0,0) scale(.9) rotate(0);opacity:0}}
+@keyframes web-hit-two{0%{transform:translate(62vw,-45vh) scale(.06) rotate(45deg);opacity:0}18%{opacity:1}48%{transform:translate(0,0) scale(.82) rotate(-5deg);opacity:1}58%,68%{transform:translate(0,0) scale(.86) rotate(0);opacity:.85}100%{transform:translate(0,0) scale(1) rotate(0);opacity:0}}
+@keyframes web-hit-three{0%{transform:translate(0,65vh) scale(.06) rotate(-20deg);opacity:0}18%{opacity:1}48%{transform:translate(0,0) scale(1) rotate(3deg);opacity:1}58%,68%{transform:translate(0,0) scale(1.04) rotate(0);opacity:.8}100%{transform:translate(0,0) scale(1.12) rotate(0);opacity:0}}
+.web-core{animation:web-core-pop 1.5s .95s both}
+@keyframes web-core-pop{0%{transform:scale(1.8);opacity:0}20%,62%{transform:scale(1);opacity:1}100%{transform:scale(.9);opacity:0}}
+@media(max-width:760px){.zio-clock{width:min(86vw,390px)}.clock-face{width:60%}.clock-label{margin-top:62%}.wanted-poster{width:clamp(100px,29vw,150px);height:clamp(150px,42vw,210px)}.poster-a{left:3%;top:36%}.poster-b{left:calc(50% - 75px);top:37%}.poster-c{right:3%;top:36%}.web-shot{width:64vw;left:18vw;top:calc(50% - 32vw)}}
+@media(prefers-reduced-motion:reduce){.poster-a,.poster-b,.poster-c,.shot-one,.shot-two,.shot-three,.web-core{animation:none!important;opacity:1}}
