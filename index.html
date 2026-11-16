@@ -93,4 +93,18 @@
 </div></div></div><div class="theme-popover" id="themePopover" hidden><div class="theme-popover-head">PILIH ATMOSFER <button id="closeThemes">×</button></div><button data-theme-choice="dark"><i class="swatch swatch-dark"></i><span><b>Dark Modern</b><small>Obsidian / Charcoal</small></span><span class="theme-check" aria-hidden="true">✓</span></button><button data-theme-choice="light"><i class="swatch swatch-light"></i><span><b>Light Clean</b><small>Bright / Minimal</small></span><span class="theme-check" aria-hidden="true"></span></button><button data-theme-choice="onepiece"><i class="swatch swatch-one"></i><span><b>Grand Line</b><small>Ocean / Adventure</small></span><span class="theme-check" aria-hidden="true"></span></button><button data-theme-choice="zio"><i class="swatch swatch-zio"></i><span><b>Zi-O Time</b><small>Magenta / Gold</small></span><span class="theme-check" aria-hidden="true"></span></button><button data-theme-choice="spider"><i class="swatch swatch-spider"></i><span><b>Spider-Verse</b><small>Red / Blue / Web</small></span><span class="theme-check" aria-hidden="true"></span></button></div>
 <div class="toast" id="toast">Tema berhasil diubah</div>
 <script src="script.js"></script>
+
+<dialog class="project-dialog" id="projectDialog" aria-labelledby="projectDialogTitle">
+ <div class="project-dialog-shell">
+  <button class="project-close" id="projectClose" type="button" aria-label="Tutup detail proyek">×</button>
+  <div class="project-dialog-media"><img id="projectDialogImage" alt=""><span id="projectDialogCategory" class="project-dialog-category"></span></div>
+  <div class="project-dialog-content">
+   <span class="eyebrow">PROJECT / DETAIL VIEW</span>
+   <h2 id="projectDialogTitle"></h2>
+   <p id="projectDialogDescription"></p>
+   <div class="project-meta-grid"><div><small>TOOLS / FOCUS</small><b id="projectDialogTools"></b></div><div><small>TYPE</small><b id="projectDialogType"></b></div></div>
+   <div class="project-dialog-actions"><a class="primary-btn" id="projectDialogLink" href="#" target="_blank" rel="noreferrer" hidden>Open project <span>↗</span></a><div class="project-stepper"><button id="projectPrev" type="button" aria-label="Proyek sebelumnya">←</button><span id="projectCounter">01 / 05</span><button id="projectNext" type="button" aria-label="Proyek berikutnya">→</button></div></div>
+  </div>
+ </div>
+</dialog>
 </body></html>
