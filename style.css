@@ -190,3 +190,52 @@ body[data-theme="onepiece"] .theme-onepiece,body[data-theme="zio"] .theme-zio,bo
 @media(prefers-reduced-motion:reduce){
  .scene-spider .web-shot{animation:none!important;opacity:1!important}
 }
+
+
+/* Final Spider-Verse asset layer: standalone img elements avoid legacy .web-shot rules. */
+.theme-transition.show-spider .scene-spider{opacity:1!important;visibility:visible!important;transform:scale(1)!important}
+.scene-spider .spider-asset{
+ position:absolute!important;display:block!important;visibility:visible!important;
+ object-fit:contain!important;opacity:0;z-index:8;pointer-events:none;
+ max-width:none!important;filter:drop-shadow(0 0 14px rgba(160,220,255,.6));
+ mix-blend-mode:normal!important;will-change:transform,opacity;
+}
+.scene-spider .spider-impact{
+ width:min(94vw,1250px)!important;height:min(76vh,720px)!important;
+ left:3vw!important;top:12vh!important;
+ animation:spider-asset-impact 3.8s ease-out .05s both!important;
+}
+.scene-spider .spider-radial{
+ width:min(66vw,760px)!important;height:min(66vw,760px)!important;
+ left:calc(50% - min(33vw,380px))!important;top:calc(50% - min(33vw,380px))!important;
+ animation:spider-asset-radial 3.25s ease-out .65s both!important;
+}
+.scene-spider .spider-burst{
+ width:min(78vw,900px)!important;height:min(78vw,900px)!important;
+ left:calc(50% - min(39vw,450px))!important;top:calc(50% - min(39vw,450px))!important;
+ animation:spider-asset-burst 2.6s cubic-bezier(.16,.8,.2,1) 1.35s both!important;
+}
+@keyframes spider-asset-impact{
+ 0%{opacity:0;transform:translateX(-82vw) scale(.65)}
+ 15%{opacity:1}
+ 48%,72%{opacity:1;transform:translateX(0) scale(1)}
+ 100%{opacity:0;transform:translateX(0) scale(1.06)}
+}
+@keyframes spider-asset-radial{
+ 0%{opacity:0;transform:scale(.12) rotate(-16deg)}
+ 24%,70%{opacity:.95;transform:scale(1) rotate(0)}
+ 100%{opacity:0;transform:scale(1.15)}
+}
+@keyframes spider-asset-burst{
+ 0%{opacity:0;transform:scale(.2) rotate(-9deg)}
+ 22%,62%{opacity:1;transform:scale(1) rotate(0)}
+ 100%{opacity:0;transform:scale(1.2)}
+}
+@media(max-width:760px){
+ .scene-spider .spider-impact{width:120vw!important;height:64vh!important;left:-10vw!important;top:18vh!important}
+ .scene-spider .spider-radial{width:88vw!important;height:88vw!important;left:6vw!important;top:calc(50% - 44vw)!important}
+ .scene-spider .spider-burst{width:100vw!important;height:100vw!important;left:0!important;top:calc(50% - 50vw)!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .scene-spider .spider-asset{animation:none!important;opacity:1!important}
+}
