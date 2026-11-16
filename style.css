@@ -132,3 +132,61 @@ body[data-theme="onepiece"] .theme-onepiece,body[data-theme="zio"] .theme-zio,bo
  .scene-spider .shot-two{width:72vw;height:72vw;left:14vw;top:calc(50% - 36vw)}
  .scene-spider .shot-three{width:94vw;height:94vw;left:3vw;top:calc(50% - 47vw)}
 }
+
+
+/* Spider-Verse transition repair: explicit image sequence and visible blending. */
+.scene-spider .web-shot{
+ position:absolute;display:grid;place-items:center;opacity:0;
+ filter:drop-shadow(0 0 16px rgba(130,205,255,.55));
+ mix-blend-mode:normal;overflow:visible;will-change:transform,opacity;
+}
+.scene-spider .web-shot img{
+ display:block;width:100%;height:100%;object-fit:contain;
+ opacity:1;visibility:visible;mix-blend-mode:normal;
+ filter:drop-shadow(0 0 10px rgba(180,230,255,.35));
+}
+.scene-spider .shot-one{
+ width:min(68vw,780px);height:min(68vw,780px);
+ left:calc(50% - min(34vw,390px));top:calc(50% - min(34vw,390px));
+ animation:spider-impact-in 2.9s cubic-bezier(.12,.75,.2,1) 0s both!important;
+}
+.scene-spider .shot-two{
+ width:min(54vw,630px);height:min(54vw,630px);
+ left:calc(50% - min(27vw,315px));top:calc(50% - min(27vw,315px));
+ animation:spider-radial-pop 2.9s cubic-bezier(.12,.75,.2,1) .45s both!important;
+}
+.scene-spider .shot-three{
+ width:min(74vw,850px);height:min(74vw,850px);
+ left:calc(50% - min(37vw,425px));top:calc(50% - min(37vw,425px));
+ animation:spider-comic-burst 2.6s cubic-bezier(.12,.75,.2,1) .95s both!important;
+}
+@keyframes spider-impact-in{
+ 0%{opacity:0;transform:translate(-78vw,18vh) scale(.18) rotate(-12deg)}
+ 18%{opacity:1}
+ 52%{opacity:1;transform:translate(0,0) scale(1) rotate(0)}
+ 72%{opacity:.95;transform:translate(0,0) scale(1.03)}
+ 100%{opacity:0;transform:translate(0,0) scale(1.08)}
+}
+@keyframes spider-radial-pop{
+ 0%{opacity:0;transform:scale(.12) rotate(-18deg)}
+ 22%{opacity:.95}
+ 52%{opacity:.9;transform:scale(1) rotate(0)}
+ 72%{opacity:.8;transform:scale(1.08)}
+ 100%{opacity:0;transform:scale(1.18)}
+}
+@keyframes spider-comic-burst{
+ 0%{opacity:0;transform:scale(.25) rotate(-8deg)}
+ 20%{opacity:1;transform:scale(1.08) rotate(2deg)}
+ 38%{opacity:.95;transform:scale(1) rotate(0)}
+ 68%{opacity:.8;transform:scale(1.04)}
+ 100%{opacity:0;transform:scale(1.2)}
+}
+.scene-spider .web-core{animation:web-core-pop 1.7s .9s both!important}
+@media(max-width:760px){
+ .scene-spider .shot-one{width:94vw;height:94vw;left:3vw;top:calc(50% - 47vw)}
+ .scene-spider .shot-two{width:78vw;height:78vw;left:11vw;top:calc(50% - 39vw)}
+ .scene-spider .shot-three{width:104vw;height:104vw;left:-2vw;top:calc(50% - 52vw)}
+}
+@media(prefers-reduced-motion:reduce){
+ .scene-spider .web-shot{animation:none!important;opacity:1!important}
+}
