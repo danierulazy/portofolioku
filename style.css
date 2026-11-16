@@ -67,7 +67,7 @@ body[data-theme="onepiece"] .theme-onepiece,body[data-theme="zio"] .theme-zio,bo
 /* Theme transition polish v2 */
 .theme-transition{background:rgba(3,5,12,.84);backdrop-filter:blur(11px)}
 .theme-scene{transform:none}
-.theme-transition.active .scene-zio,.theme-transition.active .scene-onepiece,.theme-transition.active .scene-spider{opacity:1}
+/* Only the scene matching .show-zio, .show-onepiece or .show-spider may become visible. */
 .zio-clock{width:min(72vw,480px);background:radial-gradient(circle,#291633 0 52%,#100b19 53% 66%,transparent 67%);padding-top:0;gap:8px;animation:clock-arrive .9s cubic-bezier(.16,.8,.2,1) both}
 .clock-ring{inset:12px;border-width:3px;animation:clock-spin 9s linear infinite}
 .clock-face{position:absolute;top:9%;width:62%;aspect-ratio:1;border:1px solid rgba(237,53,167,.42);border-radius:50%;background:radial-gradient(circle,rgba(237,53,167,.12),rgba(10,7,17,.2) 65%,transparent 66%);box-shadow:inset 0 0 25px rgba(237,53,167,.12),0 0 25px rgba(237,53,167,.12)}
@@ -103,3 +103,12 @@ body[data-theme="onepiece"] .theme-onepiece,body[data-theme="zio"] .theme-zio,bo
 @keyframes web-core-pop{0%{transform:scale(1.8);opacity:0}20%,62%{transform:scale(1);opacity:1}100%{transform:scale(.9);opacity:0}}
 @media(max-width:760px){.zio-clock{width:min(86vw,390px)}.clock-face{width:60%}.clock-label{margin-top:62%}.wanted-poster{width:clamp(100px,29vw,150px);height:clamp(150px,42vw,210px)}.poster-a{left:3%;top:36%}.poster-b{left:calc(50% - 75px);top:37%}.poster-c{right:3%;top:36%}.web-shot{width:64vw;left:18vw;top:calc(50% - 32vw)}}
 @media(prefers-reduced-motion:reduce){.poster-a,.poster-b,.poster-c,.shot-one,.shot-two,.shot-three,.web-core{animation:none!important;opacity:1}}
+
+/* Keep theme-transition scenes isolated: never reveal every scene at once. */
+.theme-transition .theme-scene{opacity:0;visibility:hidden;pointer-events:none}
+.theme-transition.show-zio .scene-zio,
+.theme-transition.show-onepiece .scene-onepiece,
+.theme-transition.show-spider .scene-spider{opacity:1;visibility:visible}
+.theme-scene .scene-caption{z-index:20;width:min(90vw,720px);padding:10px 16px;line-height:1.5;text-shadow:0 2px 16px #000;pointer-events:none}
+.scene-zio .scene-caption{bottom:8%}
+.scene-onepiece .scene-caption,.scene-spider .scene-caption{bottom:10%}
