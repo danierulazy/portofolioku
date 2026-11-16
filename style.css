@@ -198,7 +198,7 @@ body[data-theme="onepiece"] .theme-onepiece,body[data-theme="zio"] .theme-zio,bo
 }
 .scene-spider .spider-asset{
  position:absolute!important;display:block!important;visibility:visible!important;
- object-fit:contain!important;opacity:1!important;z-index:8;pointer-events:none;
+ object-fit:contain!important;opacity:0;z-index:8;pointer-events:none;
  max-width:none!important;filter:drop-shadow(0 0 14px rgba(160,220,255,.6));
  mix-blend-mode:normal!important;will-change:transform;
 }
@@ -213,29 +213,32 @@ body[data-theme="onepiece"] .theme-onepiece,body[data-theme="zio"] .theme-zio,bo
  animation:spider-asset-radial 2.8s ease-out .45s both!important;
 }
 .scene-spider .spider-burst{
- width:min(78vw,900px)!important;height:min(78vw,900px)!important;
- left:calc(50% - min(39vw,450px))!important;top:calc(50% - min(39vw,450px))!important;
+ width:min(54vw,640px)!important;height:min(54vw,640px)!important;
+ left:calc(50% - min(27vw,320px))!important;top:calc(50% - min(27vw,320px))!important;
  animation:spider-asset-burst 2.5s cubic-bezier(.16,.8,.2,1) .85s both!important;
 }
 @keyframes spider-asset-impact{
- 0%{transform:translateX(-82vw) scale(.65)}
- 55%,78%{transform:translateX(0) scale(1)}
- 100%{transform:translateX(0) scale(1.06)}
+ 0%{opacity:0;transform:translateX(-82vw) scale(.65)}
+ 18%{opacity:1}
+ 55%,78%{opacity:1;transform:translateX(0) scale(1)}
+ 100%{opacity:0;transform:translateX(0) scale(1.06)}
 }
 @keyframes spider-asset-radial{
- 0%{transform:scale(.12) rotate(-16deg)}
- 35%,78%{transform:scale(1) rotate(0)}
- 100%{transform:scale(1.12)}
+ 0%{opacity:0;transform:scale(.12) rotate(-16deg)}
+ 22%{opacity:.9}
+ 35%,78%{opacity:.9;transform:scale(1) rotate(0)}
+ 100%{opacity:0;transform:scale(1.12)}
 }
 @keyframes spider-asset-burst{
- 0%{transform:scale(.2) rotate(-9deg)}
- 30%,72%{transform:scale(1) rotate(0)}
- 100%{transform:scale(1.16)}
+ 0%{opacity:0;transform:scale(.2) rotate(-9deg)}
+ 24%{opacity:1}
+ 30%,72%{opacity:1;transform:scale(1) rotate(0)}
+ 100%{opacity:0;transform:scale(1.16)}
 }
 @media(max-width:760px){
  .scene-spider .spider-impact{width:120vw!important;height:64vh!important;left:-10vw!important;top:18vh!important}
  .scene-spider .spider-radial{width:88vw!important;height:88vw!important;left:6vw!important;top:calc(50% - 44vw)!important}
- .scene-spider .spider-burst{width:100vw!important;height:100vw!important;left:0!important;top:calc(50% - 50vw)!important}
+ .scene-spider .spider-burst{width:72vw!important;height:72vw!important;left:14vw!important;top:calc(50% - 36vw)!important}
 }
 
 /* One Piece transition repair: restart poster fly-ins when the theme is selected. */
