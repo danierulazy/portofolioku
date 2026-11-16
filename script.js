@@ -79,6 +79,9 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
  const category=$('#projectDialogCategory'),tools=$('#projectDialogTools'),type=$('#projectDialogType');
  const link=$('#projectDialogLink'),counter=$('#projectCounter');
  const lightbox=$('#projectLightbox'),lightboxImage=$('#lightboxImage'),lightboxCaption=$('#lightboxCaption');
+ const videoFrame=$('#projectDialogVideo'),videoPlay=$('#projectVideoPlay');
+ const videoIds={'School Project':'d2ym3MhWYus','Gaming Video':'kfKSKs3OUXU'};
+ function stopVideo(){if(videoFrame){videoFrame.src='';videoFrame.hidden=true;}if(videoPlay)videoPlay.hidden=true;image.hidden=false;}
  const cards=()=>$$('.work-card').filter(card=>!card.hidden);
  let activeCard=null;
  const detailCopy={
@@ -99,8 +102,10 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
   tools.textContent=details.tools;
   type.textContent=card.dataset.category||'creative';
   category.textContent=kind?.textContent||'CREATIVE PROJECT';
+  stopVideo();
   image.src=preview?.currentSrc||preview?.src||'';
   image.alt=preview?.alt||name;
+  if(videoIds[name])videoPlay.hidden=false;
   const external=$('a[href]',card);
   if(external){link.href=external.href;link.hidden=false;link.textContent=card.dataset.category==='video'?'Watch video ↗':'Open project ↗';}
   else{link.hidden=true;link.removeAttribute('href');}
@@ -108,6 +113,7 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
   counter.textContent=String(index+1).padStart(2,'0')+' / '+String(list.length).padStart(2,'0');
  }
  function open(card){render(card);if(!dialog.open)dialog.showModal();}
+ function playVideo(){if(!activeCard||!videoIds[title.textContent]||!videoFrame)return;const id=videoIds[title.textContent];image.hidden=true;videoPlay.hidden=true;videoFrame.hidden=false;videoFrame.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0&modestbranding=1';}
  function openLightbox(){if(!activeCard||!lightbox)return;lightboxImage.src=image.currentSrc||image.src;lightboxImage.alt=image.alt;lightboxCaption.textContent=(title.textContent+' — '+category.textContent).toUpperCase();if(!lightbox.open)lightbox.showModal();}
  function stepLightbox(direction){step(direction);lightboxImage.src=image.currentSrc||image.src;lightboxImage.alt=image.alt;lightboxCaption.textContent=(title.textContent+' — '+category.textContent).toUpperCase();}
  function step(direction){const list=cards();if(!list.length)return;let index=list.indexOf(activeCard);index=(index+direction+list.length)%list.length;render(list[index]);}
@@ -117,15 +123,18 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
  });
  $('.work-grid')?.addEventListener('click',event=>{
   const card=event.target.closest('.work-card');
-  if(!card||event.target.closest('a'))return;
+  if(!card)return;
+  if(event.target.closest('a'))event.preventDefault();
   open(card);
  });
  $('.work-grid')?.addEventListener('keydown',event=>{
   const card=event.target.closest('.work-card');
-  if(!card||event.target.closest('a'))return;
+  if(!card)return;
   if(event.key==='Enter'||event.key===' '){event.preventDefault();open(card);}
  });
  $('#projectClose')?.addEventListener('click',()=>dialog.close());
+ videoPlay?.addEventListener('click',playVideo);
+ dialog.addEventListener('close',stopVideo);
  image?.addEventListener('click',openLightbox);
  $('#lightboxClose')?.addEventListener('click',()=>lightbox.close());
  $('#lightboxPrev')?.addEventListener('click',()=>stepLightbox(-1));
