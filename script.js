@@ -78,6 +78,7 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
  const image=$('#projectDialogImage'),title=$('#projectDialogTitle'),description=$('#projectDialogDescription');
  const category=$('#projectDialogCategory'),tools=$('#projectDialogTools'),type=$('#projectDialogType');
  const link=$('#projectDialogLink'),counter=$('#projectCounter');
+ const lightbox=$('#projectLightbox'),lightboxImage=$('#lightboxImage'),lightboxCaption=$('#lightboxCaption');
  const cards=()=>$$('.work-card').filter(card=>!card.hidden);
  let activeCard=null;
  const detailCopy={
@@ -107,6 +108,8 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
   counter.textContent=String(index+1).padStart(2,'0')+' / '+String(list.length).padStart(2,'0');
  }
  function open(card){render(card);if(!dialog.open)dialog.showModal();}
+ function openLightbox(){if(!activeCard||!lightbox)return;lightboxImage.src=image.currentSrc||image.src;lightboxImage.alt=image.alt;lightboxCaption.textContent=(title.textContent+' — '+category.textContent).toUpperCase();if(!lightbox.open)lightbox.showModal();}
+ function stepLightbox(direction){step(direction);lightboxImage.src=image.currentSrc||image.src;lightboxImage.alt=image.alt;lightboxCaption.textContent=(title.textContent+' — '+category.textContent).toUpperCase();}
  function step(direction){const list=cards();if(!list.length)return;let index=list.indexOf(activeCard);index=(index+direction+list.length)%list.length;render(list[index]);}
  $$('.work-card').forEach(card=>{
   card.setAttribute('tabindex','0');card.setAttribute('role','button');
@@ -123,9 +126,18 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
   if(event.key==='Enter'||event.key===' '){event.preventDefault();open(card);}
  });
  $('#projectClose')?.addEventListener('click',()=>dialog.close());
+ image?.addEventListener('click',openLightbox);
+ $('#lightboxClose')?.addEventListener('click',()=>lightbox.close());
+ $('#lightboxPrev')?.addEventListener('click',()=>stepLightbox(-1));
+ $('#lightboxNext')?.addEventListener('click',()=>stepLightbox(1));
+ lightbox?.addEventListener('click',event=>{if(event.target===lightbox)lightbox.close();});
  $('#projectPrev')?.addEventListener('click',()=>step(-1));
  $('#projectNext')?.addEventListener('click',()=>step(1));
  dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});
  dialog.addEventListener('close',()=>{activeCard?.focus({preventScroll:true});});
- document.addEventListener('keydown',event=>{if(!dialog.open)return;if(event.key==='ArrowLeft'){event.preventDefault();step(-1);}if(event.key==='ArrowRight'){event.preventDefault();step(1);}});
+ document.addEventListener('keydown',event=>{if(lightbox?.open){if(event.key==='ArrowLeft'){event.preventDefault();stepLightbox(-1);}if(event.key==='ArrowRight'){event.preventDefault();stepLightbox(1);}return;}if(!dialog.open)return;if(event.key==='ArrowLeft'){event.preventDefault();step(-1);}if(event.key==='ArrowRight'){event.preventDefault();step(1);}});
+ document.querySelectorAll('[data-quick-index]').forEach(button=>button.addEventListener('click',()=>{const card=$('.work-card')[Number(button.dataset.quickIndex)];if(card)open(card);}));
+ const quickTrack=$('#quickPicksTrack');
+ $('#quickPrev')?.addEventListener('click',()=>quickTrack?.scrollBy({left:-quickTrack.clientWidth*.8,behavior:'smooth'}));
+ $('#quickNext')?.addEventListener('click',()=>quickTrack?.scrollBy({left:quickTrack.clientWidth*.8,behavior:'smooth'}));
 })();
