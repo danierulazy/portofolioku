@@ -368,3 +368,77 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
  $('#searchInput')?.addEventListener('input',()=>{if(window.__danieruSavedFilter)filterSaved();});
  updateCount();
 })();
+
+
+/* Batch 5 — Project Explorer, Creative Analytics and Display Preferences */
+(()=>{
+ const grid=$('.work-grid'),sort=$('#projectSort'),viewButtons=$$('.view-button'),clear=$('#clearProjectFilters');
+ if(grid){
+  const originalOrder=$$('.work-card',grid);
+  function sortProjects(mode){
+   const ordered=[...originalOrder];
+   if(mode==='az')ordered.sort((a,b)=>a.querySelector('h3').textContent.localeCompare(b.querySelector('h3').textContent));
+   if(mode==='za')ordered.sort((a,b)=>b.querySelector('h3').textContent.localeCompare(a.querySelector('h3').textContent));
+   if(mode==='category')ordered.sort((a,b)=>a.dataset.category.localeCompare(b.dataset.category)||a.querySelector('h3').textContent.localeCompare(b.querySelector('h3').textContent));
+   if(mode==='default')ordered.sort((a,b)=>originalOrder.indexOf(a)-originalOrder.indexOf(b));
+   ordered.forEach(card=>grid.append(card));
+  }
+  sort?.addEventListener('change',()=>sortProjects(sort.value));
+  viewButtons.forEach(button=>button.addEventListener('click',()=>{
+   const list=button.dataset.view==='list';grid.classList.toggle('list-view',list);
+   viewButtons.forEach(item=>{const active=item===button;item.classList.toggle('active',active);item.setAttribute('aria-pressed',String(active));});
+   try{localStorage.setItem('danieru-project-view',list?'list':'grid');}catch(error){}
+  }));
+  try{if(localStorage.getItem('danieru-project-view')==='list')$('.view-button[data-view="list"]')?.click();}catch(error){}
+  clear?.addEventListener('click',()=>{
+   $('#searchInput').value='';
+   $('#searchInput').dispatchEvent(new Event('input',{bubbles:true}));
+   $('.filter[data-filter="all"]')?.click();
+   if(sort){sort.value='default';sortProjects('default');}
+   $('.view-button[data-view="grid"]')?.click();
+  });
+ }
+ // Data-driven category analytics; it never invents extra projects or counts.
+ const cards=$$('.work-card'),categories=[['design','Design'],['photo','Photography'],['video','Video'],['motion','Motion']];
+ const chart=$('#analyticsChart'),legend=$('#analyticsLegend');
+ if(chart&&legend){
+  const total=cards.length;
+  categories.forEach(([key,label])=>{
+   const amount=cards.filter(card=>card.dataset.category===key).length;
+   const percent=total?Math.round(amount/total*100):0;
+   const bar=document.createElement('div');bar.className='analytics-bar';bar.style.setProperty('--bar-height',Math.max(percent,3)+'%');bar.title=label+': '+amount+' projects';
+   const fill=document.createElement('i');const caption=document.createElement('span');caption.textContent=key.slice(0,3).toUpperCase();bar.append(fill,caption);chart.append(bar);
+   const item=document.createElement('div');item.className='analytics-legend-item';item.innerHTML='<i></i><span></span><b></b>';item.children[1].textContent=label;item.children[2].textContent=String(amount).padStart(2,'0')+' · '+percent+'%';legend.append(item);
+  });
+  $('#analyticsTotal').textContent=String(total).padStart(2,'0')+' PROJECTS';
+ }
+ // Display preferences are local to the visitor's browser.
+ const settings=$('#settingsDialog'),openSettings=$('#openSettings'),closeSettings=$('#closeSettings');
+ const preferenceControls={reduceMotion:$('#settingReduceMotion'),highContrast:$('#settingHighContrast'),largeText:$('#settingLargeText')};
+ const preferenceClasses={reduceMotion:'reduce-motion',highContrast:'high-contrast',largeText:'large-text'};
+ function applyPreferences(){
+  Object.entries(preferenceControls).forEach(([key,input])=>{
+   const enabled=!!input?.checked;document.body.classList.toggle(preferenceClasses[key],enabled);
+   try{localStorage.setItem('danieru-pref-'+key,enabled?'1':'0');}catch(error){}
+  });
+ }
+ Object.entries(preferenceControls).forEach(([key,input])=>{
+  if(!input)return;
+  try{input.checked=localStorage.getItem('danieru-pref-'+key)==='1';}catch(error){}
+  input.addEventListener('change',applyPreferences);
+ });
+ applyPreferences();
+ openSettings?.addEventListener('click',()=>settings?.showModal());
+ closeSettings?.addEventListener('click',()=>settings?.close());
+ settings?.addEventListener('click',event=>{if(event.target===settings)settings.close();});
+ // Current-section navigation indicator, including the hero section.
+ const navLinks=$$('.nav-link');
+ if('IntersectionObserver'in window){
+  const sectionObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{
+   if(!entry.isIntersecting)return;
+   navLinks.forEach(link=>link.classList.toggle('active',link.getAttribute('href')==='#'+entry.target.id));
+   const current=$('#currentSection');if(current)current.textContent=entry.target.id.toUpperCase();
+  }),{rootMargin:'-35% 0px -55% 0px'});
+  ['home','about','work','skills','music','games','social','contact'].forEach(id=>{const section=document.getElementById(id);if(section)sectionObserver.observe(section);});
+ }
+})();
