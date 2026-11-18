@@ -589,7 +589,7 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
   if(key==='logo')document.body.classList.add('secret-mode');
   if(key==='konami'){
    document.body.classList.add('retro-secret');
-   const t=$('#toast');if(t){t.textContent='RETRO MODE UNLOCKED · PRESS THE CODE AGAIN TO TOGGLE';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+   const t=$('#toast');if(t){t.textContent='RETRO MODE UNLOCKED · SECRET THEME ACTIVE';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
   }
   if(key==='luffy'&&typeof applyTheme==='function')applyTheme('onepiece',true);
   if(key==='spider'&&typeof applyTheme==='function')applyTheme('spider',true);
@@ -605,16 +605,7 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
  const brand=document.querySelector('.brand-mark');
  brand?.addEventListener('dblclick',()=>unlock('logo'));
  $('#heroPortrait')?.addEventListener('click',()=>unlock('logo'));
- list.querySelectorAll('[data-secret]').forEach(item=>{
-  item.addEventListener('click',()=>{
-   if(found.has(item.dataset.secret))return;
-   if(item.dataset.secret==='logo')unlock('logo');
-   else if(item.dataset.secret==='konami')unlock('konami');
-   else if(item.dataset.secret==='luffy')unlock('luffy');
-   else if(item.dataset.secret==='spider')unlock('spider');
-   else if(item.dataset.secret==='zio')unlock('zio');
-  });
- });
+ // Vault entries are clues and progress indicators; discoveries must be triggered in the portfolio itself.
  const codes={
   konami:['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'],
   luffy:['l','u','f','f','y'],
