@@ -560,3 +560,83 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
  dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});
  dialog.addEventListener('close',stopTimer);
 })();
+
+
+/* Danieru Secret System — discoverable easter eggs */
+(()=>{
+ const vault=$('#easterVault'),list=$('#vaultList'),toast=$('#secretUnlockToast');
+ if(!vault||!list||!toast)return;
+ const keys=['logo','konami','luffy','spider','zio'];
+ const found=new Set();
+ const labels={logo:"The Creator's Mark",konami:'Retro Player',luffy:'Grand Line Signal',spider:'Friendly Neighborhood',zio:'Time Administrator'};
+ const count=$('#vaultCount'),bar=$('#vaultProgressBar'),name=$('#secretUnlockName');
+ let toastTimer=null;
+ function updateVault(){
+  list.querySelectorAll('[data-secret]').forEach(item=>{
+   const unlocked=found.has(item.dataset.secret);item.classList.toggle('unlocked',unlocked);
+   const status=item.querySelector('em');if(status)status.textContent=unlocked?'UNLOCKED':'LOCKED';
+  });
+  if(count)count.textContent=found.size+' / '+keys.length+' SECRETS FOUND';
+  if(bar)bar.style.width=(found.size/keys.length*100)+'%';
+ }
+ function openVault(){if(!vault.open)vault.showModal();}
+ function unlock(key){
+  if(!keys.includes(key)||found.has(key))return;
+  found.add(key);updateVault();
+  if(name)name.textContent=labels[key];
+  toast.classList.add('show');clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>toast.classList.remove('show'),5200);
+  if(key==='logo')document.body.classList.add('secret-mode');
+  if(key==='konami'){
+   document.body.classList.add('retro-secret');
+   const t=$('#toast');if(t){t.textContent='RETRO MODE UNLOCKED · PRESS THE CODE AGAIN TO TOGGLE';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+  }
+  if(key==='luffy'&&typeof applyTheme==='function')applyTheme('onepiece',true);
+  if(key==='spider'&&typeof applyTheme==='function')applyTheme('spider',true);
+  if(key==='zio'&&typeof applyTheme==='function')applyTheme('zio',true);
+  if(found.size===keys.length){
+   const t=$('#toast');if(t){t.textContent='ALL SECRETS FOUND · DANIERU MASTER EXPLORER';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),4000);}
+  }
+ }
+ $('#closeEasterVault')?.addEventListener('click',()=>vault.close());
+ $('#vaultDone')?.addEventListener('click',()=>vault.close());
+ $('#openVaultFromToast')?.addEventListener('click',openVault);
+ $('#brandLogo')?.addEventListener('dblclick',()=>unlock('logo'));
+ const brand=document.querySelector('.brand-mark');
+ brand?.addEventListener('dblclick',()=>unlock('logo'));
+ $('#heroPortrait')?.addEventListener('click',()=>unlock('logo'));
+ list.querySelectorAll('[data-secret]').forEach(item=>{
+  item.addEventListener('click',()=>{
+   if(found.has(item.dataset.secret))return;
+   if(item.dataset.secret==='logo')unlock('logo');
+   else if(item.dataset.secret==='konami')unlock('konami');
+   else if(item.dataset.secret==='luffy')unlock('luffy');
+   else if(item.dataset.secret==='spider')unlock('spider');
+   else if(item.dataset.secret==='zio')unlock('zio');
+  });
+ });
+ const codes={
+  konami:['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'],
+  luffy:['l','u','f','f','y'],
+  spider:['s','p','i','d','e','r'],
+  zio:['z','i','o']
+ };
+ const progress={konami:0,luffy:0,spider:0,zio:0};
+ document.addEventListener('keydown',event=>{
+  if(event.target instanceof HTMLInputElement||event.target instanceof HTMLTextAreaElement||event.target?.isContentEditable)return;
+  Object.entries(codes).forEach(([key,code])=>{
+   const expected=code[progress[key]];
+   if(event.key.toLowerCase()===String(expected).toLowerCase()){
+    progress[key]++;
+    if(progress[key]===code.length){progress[key]=0;unlock(key);}
+   }else progress[key]=event.key.toLowerCase()===String(code[0]).toLowerCase()?1:0;
+  });
+  if(event.key==='Escape')toast.classList.remove('show');
+ });
+ const command=$('#commandInput');
+ command?.addEventListener('input',()=>{
+  const value=command.value.trim().toLowerCase();
+  if(value==='secrets'||value==='easter eggs'||value==='vault')openVault();
+ });
+ updateVault();
+})();
