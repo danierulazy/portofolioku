@@ -699,3 +699,11 @@ body.secret-mode .hero h1{ text-shadow:0 0 35px color-mix(in srgb,var(--accent) 
 body.secret-mode .brand-mark{animation:secret-mark 1.2s ease-in-out 2}
 @keyframes secret-mark{50%{transform:rotate(180deg) scale(1.2)}}
 @media(max-width:520px){.vault-list article{grid-template-columns:25px 1fr auto;padding:11px;gap:8px}.vault-list article small{font-size:9px}.vault-bottom{align-items:flex-start;flex-direction:column}.vault-bottom button{width:100%}.secret-unlock-toast{right:16px;bottom:16px}}
+
+
+/* Retro secret theme */
+body.retro-secret{--bg:#080b09;--panel:#101a13;--panel2:#17251a;--text:#c4ffd0;--muted:#76a984;--line:rgba(111,255,148,.2);--accent:#66ff8c;--accent2:#b5ff72}
+body.retro-secret .main{filter:saturate(.82)}
+body.retro-secret .brand-mark,body.retro-secret .hero h1{font-family:monospace;text-shadow:0 0 14px rgba(102,255,140,.25)}
+body.retro-secret .section{position:relative}
+body.retro-secret .section:after{content:'';position:absolute;inset:0;pointer-events:none;opacity:.1;background:repeating-linear-gradient(to bottom,transparent 0 3px,rgba(102,255,140,.13) 4px)}
