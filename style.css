@@ -630,3 +630,35 @@ body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{sc
 @keyframes summon-arrive{from{opacity:0;transform:translateY(24px) scale(.85)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:700px){.identity-section{grid-template-columns:1fr;gap:30px;padding:55px 0}.identity-copy{text-align:center}.identity-card{width:min(75vw,300px)}.hub-grid{grid-template-columns:1fr}.hub-character{display:grid;grid-template-columns:105px 1fr;grid-template-rows:auto auto auto 1fr;column-gap:14px;align-items:center}.hub-art{grid-row:1/5;width:105px;height:112px;margin:0}.hub-kicker{align-self:end}.hub-character>b{margin:5px 0}.hub-action{margin-top:7px}.summon-stage{grid-template-columns:1fr;text-align:center;padding-bottom:60px}.summon-stage>img{height:180px}.hub-footer{font-size:7px;letter-spacing:.7px}}
 @media(prefers-reduced-motion:reduce){.intro-orbit,.intro-content,.summon-stage>img{animation:none!important}.identity-card-inner,.hub-character,.danieru-intro{transition:none!important}}
+
+
+/* Danieru Arcade — responsive memory match */
+.arcade-launch-row{display:flex;justify-content:space-between;align-items:center;gap:22px;margin-top:30px;padding:22px 24px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.arcade-launch-row p{margin:8px 0 0;color:var(--muted);font-size:12px}
+.arcade-launch{flex-shrink:0;padding:14px 18px;border:1px solid var(--accent);border-radius:5px;background:var(--accent);color:#fff;font:700 9px 'Space Grotesk';letter-spacing:1px;cursor:pointer;transition:transform .2s,filter .2s}
+.arcade-launch:hover{transform:translateY(-2px);filter:brightness(1.12)}.arcade-launch span{margin-left:15px}
+.memory-dialog{width:min(680px,94vw);max-width:none;max-height:92vh;padding:0;border:1px solid var(--line);border-radius:16px;background:var(--bg);color:var(--text);box-shadow:0 30px 100px rgba(0,0,0,.6);overflow:auto}
+.memory-dialog::backdrop{background:rgba(2,4,10,.82);backdrop-filter:blur(10px)}
+.memory-shell{padding:clamp(18px,4vw,34px)}
+.memory-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
+.memory-head h2{font:700 clamp(30px,5vw,46px) 'Space Grotesk';letter-spacing:-1.8px;margin:8px 0}
+.memory-head h2 em{font-style:normal;color:var(--accent)}
+.memory-head p{color:var(--muted);font-size:12px;line-height:1.6}
+.memory-stats{display:flex;gap:24px;padding:18px 0;margin:18px 0;border-block:1px solid var(--line);font:700 8px 'Space Grotesk';letter-spacing:1.5px;color:var(--muted)}
+.memory-stats span{display:flex;gap:8px;align-items:center}.memory-stats b{font-size:13px;color:var(--text);font-variant-numeric:tabular-nums}
+.memory-board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.memory-card{position:relative;aspect-ratio:1;border:1px solid var(--line);border-radius:9px;background:linear-gradient(145deg,var(--panel2),var(--panel));color:var(--text);cursor:pointer;overflow:hidden;transition:transform .22s,border-color .22s,background .22s;display:grid;place-items:center}
+.memory-card:hover:not(:disabled){transform:translateY(-3px);border-color:var(--accent)}
+.memory-card:before{content:'AD';font:700 clamp(18px,4vw,28px) 'Space Grotesk';letter-spacing:-2px;color:var(--muted);opacity:.7}
+.memory-card .memory-symbol{display:none;font-size:clamp(24px,6vw,43px);filter:drop-shadow(0 5px 12px rgba(0,0,0,.2))}
+.memory-card.is-open,.memory-card.is-matched{background:color-mix(in srgb,var(--accent) 12%,var(--panel));border-color:var(--accent)}
+.memory-card.is-open:before,.memory-card.is-matched:before{display:none}
+.memory-card.is-open .memory-symbol,.memory-card.is-matched .memory-symbol{display:block;animation:memory-pop .25s ease both}
+.memory-card.is-matched{opacity:.62;cursor:default}
+.memory-card:disabled{cursor:default}
+.memory-bottom{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-top:20px}
+.memory-bottom p{color:var(--muted);font-size:11px}
+.memory-bottom button{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:5px;padding:11px 15px;font:700 8px 'Space Grotesk';letter-spacing:1.2px;cursor:pointer}
+@keyframes memory-pop{from{opacity:0;transform:scale(.65)}to{opacity:1;transform:scale(1)}}
+@media(max-width:540px){.arcade-launch-row{align-items:flex-start;flex-direction:column}.arcade-launch{width:100%}.memory-board{gap:7px}.memory-stats{justify-content:space-between;gap:8px;font-size:7px}.memory-bottom{align-items:flex-start;flex-direction:column}.memory-bottom button{width:100%}}
+@media(prefers-reduced-motion:reduce){.memory-card,.arcade-launch{transition:none!important}.memory-card .memory-symbol{animation:none!important}}
