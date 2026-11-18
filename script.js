@@ -566,9 +566,9 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
 (()=>{
  const vault=$('#easterVault'),list=$('#vaultList'),toast=$('#secretUnlockToast');
  if(!vault||!list||!toast)return;
- const keys=['logo','konami','luffy','spider','zio'];
+ const keys=['logo','konami','luffy','spider','zio','credits'];
  const found=new Set();
- const labels={logo:"The Creator's Mark",konami:'Retro Player',luffy:'Grand Line Signal',spider:'Friendly Neighborhood',zio:'Time Administrator'};
+ const labels={logo:"The Creator's Mark",konami:'Retro Player',luffy:'Grand Line Signal',spider:'Friendly Neighborhood',zio:'Time Administrator',credits:'Hidden Credits'};
  const count=$('#vaultCount'),bar=$('#vaultProgressBar'),name=$('#secretUnlockName');
  let toastTimer=null;
  function updateVault(){
@@ -624,6 +624,14 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
   });
   if(event.key==='Escape')toast.classList.remove('show');
  });
+ const footerCredit=document.querySelector('footer>span:last-child');
+ let footerClicks=0,footerClickTimer=null;
+ footerCredit?.addEventListener('click',()=>{
+  footerClicks++;clearTimeout(footerClickTimer);
+  footerClickTimer=setTimeout(()=>{footerClicks=0;},1800);
+  if(footerClicks>=5){footerClicks=0;unlock('credits');if(name)name.textContent='A little thank-you from Danieru.';}
+ });
+ if(footerCredit){footerCredit.style.cursor='default';footerCredit.title='';}
  const command=$('#commandInput');
  command?.addEventListener('input',()=>{
   const value=command.value.trim().toLowerCase();
