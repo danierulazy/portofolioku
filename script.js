@@ -442,3 +442,55 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
   ['home','about','work','skills','music','games','social','contact'].forEach(id=>{const section=document.getElementById(id);if(section)sectionObserver.observe(section);});
  }
 })();
+
+
+/* Danieru Universe Experience — intro controls, flip ID and summon hub */
+(()=>{
+ const intro=$('#danieruIntro'),enter=$('#enterUniverse'),skip=$('#skipIntro');
+ if(intro){
+  let alreadySeen=false;
+  try{alreadySeen=sessionStorage.getItem('danieru-intro-seen')==='1';}catch(error){}
+  if(alreadySeen)intro.classList.add('is-leaving');
+  const dismiss=()=>{
+   intro.classList.add('is-leaving');
+   try{sessionStorage.setItem('danieru-intro-seen','1');}catch(error){}
+   window.setTimeout(()=>{intro.hidden=true;},850);
+  };
+  enter?.addEventListener('click',dismiss);skip?.addEventListener('click',dismiss);
+  document.addEventListener('keydown',event=>{
+   if(!intro.hidden&&!intro.classList.contains('is-leaving')&&(event.key==='Enter'||event.key==='Escape')){event.preventDefault();dismiss();}
+  });
+  intro.addEventListener('transitionend',event=>{if(event.target===intro&&intro.classList.contains('is-leaving'))intro.hidden=true;});
+ }
+ const idCard=$('#identityCard');
+ idCard?.addEventListener('click',()=>{
+  const flipped=idCard.classList.toggle('is-flipped');
+  idCard.setAttribute('aria-pressed',String(flipped));
+ });
+ const hub=$('#characterHub'),openHub=$('#openCharacterHub'),closeHub=$('#closeCharacterHub');
+ const stage=$('#summonStage'),grid=$('.hub-grid',hub),summonImage=$('#summonImage');
+ const summonTitle=$('#summonTitle'),summonEyebrow=$('#summonEyebrow'),summonDescription=$('#summonDescription');
+ const universes={
+  onepiece:{title:'GRAND LINE',eyebrow:'PIRATE WORLD ACTIVATED',description:'The sea is calling. Welcome aboard the Thousand Sunny.',image:'https://raw.githubusercontent.com/danierulazy/imagesrcformyprtflio/main/LUFFY_WANTED_POSTER.png',theme:'onepiece'},
+  spider:{title:'SPIDER-VERSE',eyebrow:'NEIGHBORHOOD PROTECTED',description:'A new web-slinging chapter begins in your creative universe.',image:'https://raw.githubusercontent.com/danierulazy/imagesrcformyprtflio/main/SPIDERMAN.png',theme:'spider'},
+  zio:{title:'KAMEN RIDER ZI-O',eyebrow:'TIME IMPACT ACTIVATED',description:'The future is yours to rewrite. The king of time has arrived.',image:'https://raw.githubusercontent.com/danierulazy/imagesrcformyprtflio/main/Zi-O%20Ridewatch.png',theme:'zio'}
+ };
+ openHub?.addEventListener('click',()=>{if(hub&&!hub.open)hub.showModal();});
+ closeHub?.addEventListener('click',()=>hub?.close());
+ hub?.addEventListener('click',event=>{if(event.target===hub)hub.close();});
+ hub?.querySelectorAll('[data-universe]').forEach(button=>button.addEventListener('click',()=>{
+  const selected=universes[button.dataset.universe];if(!selected)return;
+  if(grid)grid.hidden=true;
+  if(stage){stage.hidden=false;stage.classList.remove('summon-replay');void stage.offsetWidth;stage.classList.add('summon-replay');}
+  summonImage.src=selected.image;summonImage.alt=selected.title;
+  summonTitle.textContent=selected.title;summonEyebrow.textContent=selected.eyebrow;summonDescription.textContent=selected.description;
+  if(typeof applyTheme==='function')applyTheme(selected.theme,true);
+ }));
+ $('#summonBack')?.addEventListener('click',()=>{
+  if(stage)stage.hidden=true;if(grid)grid.hidden=false;
+ });
+ hub?.addEventListener('close',()=>{if(stage)stage.hidden=true;if(grid)grid.hidden=false;});
+ document.addEventListener('keydown',event=>{
+  if(event.key==='Escape'&&hub?.open){hub.close();}
+ });
+})();
