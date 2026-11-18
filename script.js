@@ -494,3 +494,69 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
   if(event.key==='Escape'&&hub?.open){hub.close();}
  });
 })();
+
+
+/* Danieru Arcade — memory match game */
+(()=>{
+ const dialog=$('#memoryDialog'),board=$('#memoryBoard');
+ const launch=$('#openMemoryGame'),close=$('#closeMemoryGame'),restart=$('#restartMemoryGame');
+ if(!dialog||!board||!launch)return;
+ const symbols=['✦','☾','⚡','♛','✿','◈'];
+ let deck=[],opened=[],matched=new Set(),moves=0,seconds=0,timer=null,locked=false;
+ const movesNode=$('#memoryMoves'),pairsNode=$('#memoryPairs'),timeNode=$('#memoryTime'),message=$('#memoryMessage');
+ const formatTime=value=>String(Math.floor(value/60)).padStart(2,'0')+':'+String(value%60).padStart(2,'0');
+ function updateStats(){
+  if(movesNode)movesNode.textContent=String(moves).padStart(2,'0');
+  if(pairsNode)pairsNode.textContent=matched.size+' / '+symbols.length;
+  if(timeNode)timeNode.textContent=formatTime(seconds);
+ }
+ function stopTimer(){if(timer){clearInterval(timer);timer=null;}}
+ function startTimer(){if(timer)return;timer=setInterval(()=>{seconds++;updateStats();},1000);}
+ function shuffle(items){
+  const copy=items.slice();
+  for(let i=copy.length-1;i>0;i--){const k=Math.floor(Math.random()*(i+1));[copy[i],copy[k]]=[copy[k],copy[i]];}
+  return copy;
+ }
+ function draw(){
+  board.replaceChildren();
+  deck.forEach((symbol,index)=>{
+   const button=document.createElement('button');
+   button.type='button';button.className='memory-card';button.dataset.index=String(index);
+   button.setAttribute('aria-label','Kartu tertutup '+(index+1));
+   const face=document.createElement('span');face.className='memory-symbol';face.textContent=symbol;
+   button.append(face);button.addEventListener('click',()=>flip(index,button));board.append(button);
+  });
+ }
+ function reset(){
+  stopTimer();deck=shuffle([...symbols,...symbols]);opened=[];matched=new Set();moves=0;seconds=0;locked=false;
+  if(message)message.textContent='Pilih dua kartu untuk menemukan pasangan.';
+  updateStats();draw();
+ }
+ function flip(index,button){
+  if(locked||opened.some(item=>item.index===index)||matched.has(index))return;
+  startTimer();button.classList.add('is-open');button.setAttribute('aria-label','Kartu '+deck[index]);opened.push({index,button});
+  if(opened.length<2)return;
+  moves++;updateStats();
+  const [first,second]=opened;
+  if(deck[first.index]===deck[second.index]){
+   matched.add(first.index);matched.add(second.index);
+   [first.button,second.button].forEach(card=>{card.classList.remove('is-open');card.classList.add('is-matched');card.disabled=true;card.setAttribute('aria-label','Pasangan ditemukan: '+deck[first.index]);});
+   opened=[];
+   if(matched.size===symbols.length){
+    stopTimer();if(message)message.textContent='Semua pasangan ditemukan! '+moves+' langkah · '+formatTime(seconds)+'. Coba pecahkan rekor langkahmu.';
+   }else if(message)message.textContent='Nice! Pasangan ditemukan.';
+   updateStats();
+  }else{
+   locked=true;if(message)message.textContent='Belum cocok. Coba pasangan lain.';
+   window.setTimeout(()=>{
+    [first,second].forEach(item=>{item.button.classList.remove('is-open');item.button.setAttribute('aria-label','Kartu tertutup');});
+    opened=[];locked=false;
+   },750);
+  }
+ }
+ launch.addEventListener('click',()=>{reset();if(!dialog.open)dialog.showModal();});
+ close?.addEventListener('click',()=>dialog.close());
+ restart?.addEventListener('click',reset);
+ dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});
+ dialog.addEventListener('close',stopTimer);
+})();
