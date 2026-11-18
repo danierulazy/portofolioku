@@ -662,3 +662,40 @@ body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{sc
 @keyframes memory-pop{from{opacity:0;transform:scale(.65)}to{opacity:1;transform:scale(1)}}
 @media(max-width:540px){.arcade-launch-row{align-items:flex-start;flex-direction:column}.arcade-launch{width:100%}.memory-board{gap:7px}.memory-stats{justify-content:space-between;gap:8px;font-size:7px}.memory-bottom{align-items:flex-start;flex-direction:column}.memory-bottom button{width:100%}}
 @media(prefers-reduced-motion:reduce){.memory-card,.arcade-launch{transition:none!important}.memory-card .memory-symbol{animation:none!important}}
+
+
+/* Hidden Easter Egg Vault and Secret Discovery UI */
+.easter-vault{width:min(650px,94vw);max-width:none;max-height:90vh;padding:0;border:1px solid var(--line);border-radius:16px;background:var(--bg);color:var(--text);box-shadow:0 35px 120px rgba(0,0,0,.6);overflow:auto}
+.easter-vault::backdrop{background:rgba(1,3,9,.84);backdrop-filter:blur(13px)}
+.vault-shell{padding:clamp(20px,4vw,36px)}
+.vault-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.vault-top h2{font:700 clamp(30px,5vw,46px) 'Space Grotesk';letter-spacing:-1.8px;margin:10px 0}
+.vault-top h2 em{font-style:normal;color:var(--accent)}
+.vault-top p{font-size:12px;line-height:1.6;color:var(--muted);max-width:420px}
+.vault-progress{display:flex;align-items:center;gap:15px;margin:26px 0 16px;font:700 8px 'Space Grotesk';letter-spacing:1px;color:var(--muted)}
+.vault-track{height:4px;flex:1;background:var(--panel2);border-radius:8px;overflow:hidden}
+.vault-track i{display:block;width:0;height:100%;background:var(--accent);transition:width .4s}
+.vault-list{display:grid;gap:8px}
+.vault-list article{display:grid;grid-template-columns:35px 1fr auto;align-items:center;gap:12px;padding:14px;border:1px solid var(--line);border-radius:8px;background:var(--panel);transition:border-color .2s,background .2s}
+.vault-list article>b{font:700 11px 'Space Grotesk';color:var(--muted)}
+.vault-list article span{display:grid;gap:4px}
+.vault-list article strong{font:700 12px 'Space Grotesk'}
+.vault-list article small{font-size:10px;color:var(--muted)}
+.vault-list article em{font:700 7px 'Space Grotesk';letter-spacing:1px;color:var(--muted);font-style:normal}
+.vault-list article.unlocked{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--panel))}
+.vault-list article.unlocked em{color:var(--accent)}
+.vault-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px;padding-top:17px;border-top:1px solid var(--line)}
+.vault-bottom>span{font:700 7px 'Space Grotesk';letter-spacing:1px;color:var(--muted)}
+.vault-bottom button,.secret-unlock-toast button{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:10px 12px;border-radius:5px;font:700 8px 'Space Grotesk';letter-spacing:1px;cursor:pointer}
+.secret-unlock-toast{position:fixed;z-index:3100;right:24px;bottom:24px;display:flex;align-items:center;gap:12px;max-width:min(370px,calc(100vw - 32px));padding:13px 15px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);box-shadow:0 15px 55px rgba(0,0,0,.3);opacity:0;transform:translateY(15px);pointer-events:none;transition:opacity .3s,transform .3s}
+.secret-unlock-toast.show{opacity:1;transform:translateY(0);pointer-events:auto}
+.secret-unlock-toast>span{font-size:22px;color:var(--accent)}
+.secret-unlock-toast>div{display:grid;gap:3px;flex:1}
+.secret-unlock-toast b{font:700 8px 'Space Grotesk';letter-spacing:1.2px}
+.secret-unlock-toast small{font-size:10px;color:var(--muted)}
+.secret-unlock-toast button{padding:8px 10px}
+body.secret-mode{--accent:#d5b46a;--accent2:#e4d39a}
+body.secret-mode .hero h1{ text-shadow:0 0 35px color-mix(in srgb,var(--accent) 40%,transparent)}
+body.secret-mode .brand-mark{animation:secret-mark 1.2s ease-in-out 2}
+@keyframes secret-mark{50%{transform:rotate(180deg) scale(1.2)}}
+@media(max-width:520px){.vault-list article{grid-template-columns:25px 1fr auto;padding:11px;gap:8px}.vault-list article small{font-size:9px}.vault-bottom{align-items:flex-start;flex-direction:column}.vault-bottom button{width:100%}.secret-unlock-toast{right:16px;bottom:16px}}
