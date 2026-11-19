@@ -6,10 +6,10 @@ const ls={g:k=>{try{return localStorage.getItem(k)}catch(e){return null}},s:(k,v
 const COL={dark:'#7c5cff',light:'#ffb703',onepiece:'#19a7ce',zio:'#ff2d9a',spider:'#e62429'};
 const calm=()=>matchMedia('(prefers-reduced-motion: reduce)').matches||/reduce/i.test(B.className+R.className);
 const col=()=>COL[B.dataset.theme]||COL.dark;
-let ac,mg,sfxOn=ls.g('dx-sfx')!=='0',ambOn=ls.g('dx-amb')==='1',vol=+(ls.g('dx-vol')||.5),stopAmb=()=>{};
+let ac,mg,sfxOn=ls.g('dx-sfx')!=='0',ambOn=ls.g('dx-amb')!=='0',vol=+(ls.g('dx-vol')||.7),stopAmb=()=>{};
 
 /* ---------- Audio engine ---------- */
-function C(){if(!ac){ac=new(window.AudioContext||window.webkitAudioContext)();mg=ac.createGain();mg.gain.value=vol;mg.connect(ac.destination);}if(ac.state==='suspended')ac.resume();return ac;}
+function C(){if(!ac){ac=new(window.AudioContext||window.webkitAudioContext)();mg=ac.createGain();mg.gain.value=vol*3;const k=ac.createDynamicsCompressor();mg.connect(k);k.connect(ac.destination);}if(ac.state==='suspended')ac.resume();return ac;}
 function tone(f,d=.15,type='sine',g=.15,t0=0,to){if(!sfxOn&&!tone.f)return;const c=C(),t=c.currentTime+t0,o=c.createOscillator(),e=c.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+d);e.gain.setValueAtTime(g,t);e.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(e);e.connect(mg);o.start(t);o.stop(t+d+.05);}
 function hiss(d=.4,f=800,g=.12,to){if(!sfxOn&&!tone.f)return;const c=C(),n=Math.floor(c.sampleRate*d),b=c.createBuffer(1,n,c.sampleRate),a=b.getChannelData(0),t=c.currentTime;for(let i=0;i<n;i++)a[i]=Math.random()*2-1;const s=c.createBufferSource(),q=c.createBiquadFilter(),e=c.createGain();s.buffer=b;q.type='bandpass';q.frequency.setValueAtTime(f,t);if(to)q.frequency.exponentialRampToValueAtTime(to,t+d);e.gain.setValueAtTime(g,t);e.gain.exponentialRampToValueAtTime(.001,t+d);s.connect(q);q.connect(e);e.connect(mg);s.start(t);}
 const arp=(a,d,ty='triangle',g=.14,s=.08)=>a.forEach((f,i)=>tone(f,d,ty,g,i*s));
@@ -26,7 +26,7 @@ const SFX={
 /* Backsound ambient: tiap tema punya suasana sendiri */
 function ambient(t){
  stopAmb();if(!ambOn)return;
- const c=C(),g=c.createGain(),stops=[];g.gain.value=0;g.gain.linearRampToValueAtTime(.05,c.currentTime+2);g.connect(mg);
+ const c=C(),g=c.createGain(),stops=[];g.gain.value=0;g.gain.linearRampToValueAtTime(.12,c.currentTime+2);g.connect(mg);
  const osc=(f,ty='sine')=>{const o=c.createOscillator();o.type=ty;o.frequency.value=f;o.connect(g);o.start();stops.push(()=>o.stop())};
  const iv=(fn,ms)=>{const i=setInterval(()=>{if(!ambOn)return;tone.f=1;fn();tone.f=0},ms);stops.push(()=>clearInterval(i))};
  if(t==='dark'){osc(55);osc(82.4);osc(110.5,'triangle')}
@@ -34,6 +34,8 @@ function ambient(t){
  else if(t==='onepiece'){osc(98);osc(147);iv(()=>hiss(2.2,500,.05,200),3200)}
  else if(t==='zio')iv(()=>tone(1500,.02,'square',.05),1000);
  else iv(()=>{tone(60,.18,'sine',.25);tone(55,.2,'sine',.2,.22)},900);
+ const sc={dark:[220,262,330,392],light:[523,659,784,988],onepiece:[392,494,587,784],zio:[349,466,698,932],spider:[330,392,494,659]}[t]||[392,494,587];
+ iv(()=>tone(sc[Math.random()*sc.length|0],1.4,'sine',.25),1500);
  stopAmb=()=>{g.gain.setTargetAtTime(0,c.currentTime,.3);stops.forEach(f=>setTimeout(f,1500));stopAmb=()=>{}};
 }
 
@@ -65,8 +67,8 @@ dock.innerHTML=`<button id="dxS" aria-pressed="${sfxOn}" title="Efek suara">SFX<
 B.appendChild(dock);
 $('#dxS').onclick=e=>{sfxOn=!sfxOn;e.currentTarget.setAttribute('aria-pressed',sfxOn);ls.s('dx-sfx',sfxOn?'1':'0');SFX.click()};
 $('#dxA').onclick=e=>{ambOn=!ambOn;e.currentTarget.setAttribute('aria-pressed',ambOn);ls.s('dx-amb',ambOn?'1':'0');ambOn?ambient(B.dataset.theme):stopAmb()};
-$('#dxV').oninput=e=>{vol=+e.target.value;ls.s('dx-vol',vol);if(mg)mg.gain.value=vol};
-addEventListener('pointerdown',()=>{if(ambOn)ambient(B.dataset.theme)},{once:true});
+$('#dxV').oninput=e=>{vol=+e.target.value;ls.s('dx-vol',vol);if(mg)mg.gain.value=vol*3};
+['pointerdown','keydown'].forEach(ev=>addEventListener(ev,()=>{if(ambOn)ambient(B.dataset.theme)},{once:true}));
 
 /* ---------- Interaksi ---------- */
 document.addEventListener('click',e=>{burst(e.clientX,e.clientY,6);if(e.target.closest('a,button,.work-card,.track'))SFX.click()},true);
