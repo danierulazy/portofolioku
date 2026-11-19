@@ -802,3 +802,16 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
  audio.addEventListener('play',()=>set(true));audio.addEventListener('pause',()=>set(false));audio.addEventListener('ended',()=>set(false));
  set(!audio.paused&&!audio.ended);
 })();
+
+
+/* Danieru Music Lounge: switch between local listening and Spotify embed. */
+(()=>{
+ const tabs=[...document.querySelectorAll('[data-music-view]')];
+ const panels=[...document.querySelectorAll('[data-music-panel]')];
+ if(!tabs.length||!panels.length)return;
+ tabs.forEach(tab=>tab.addEventListener('click',()=>{
+  const target=tab.dataset.musicView;
+  tabs.forEach(item=>{const active=item===tab;item.classList.toggle('active',active);item.setAttribute('aria-selected',String(active));});
+  panels.forEach(panel=>{const active=panel.dataset.musicPanel===target;panel.hidden=!active;panel.classList.toggle('active',active);});
+ }));
+})();
