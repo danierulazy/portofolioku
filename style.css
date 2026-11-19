@@ -904,3 +904,27 @@ section.section{position:relative}
 .dx-spotify-footnote{margin:11px 2px 0;color:var(--muted);font-size:10px;line-height:1.6}
 @media(max-width:700px){.dx-music-hero{grid-template-columns:1fr;gap:24px}.dx-music-feature-art{width:min(68%,260px);margin:auto}.dx-music-feature-copy h3{font-size:clamp(37px,11vw,58px)}.dx-music-view[data-music-panel="local"]{grid-template-columns:1fr}.dx-music-side-note{min-height:0}.dx-music-topline{font-size:7px}.dx-spotify-heading{align-items:start;flex-direction:column}.dx-music-switcher button{flex:1;justify-content:center;padding:11px 7px;font-size:7px}.dx-music-lounge .dx-audio-visualizer{gap:7px}.dx-music-lounge .dx-audio-visualizer>span,.dx-music-lounge .dx-audio-visualizer>small{font-size:5px}}
 @media(prefers-reduced-motion:reduce){.dx-music-lounge *{animation:none!important;transition:none!important}}
+
+
+/* Synchronized lyrics panel */
+.dx-lyrics-card{margin-top:18px;padding:clamp(16px,2.5vw,25px);border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--panel) 84%,transparent);overflow:hidden}
+.dx-lyrics-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:12px}
+.dx-lyrics-head h4{margin:6px 0 0;font-size:clamp(19px,2vw,25px);letter-spacing:-.7px}
+.dx-lyrics-head h4 span{color:var(--accent,#f32c9b)}
+.dx-lyrics-actions{display:flex;align-items:center;gap:8px}
+.dx-lyrics-upload,.dx-lyrics-clear{display:inline-flex;align-items:center;justify-content:center;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:color-mix(in srgb,var(--bg) 72%,transparent);color:var(--text);font:800 8px 'Space Grotesk';letter-spacing:.8px;cursor:pointer;transition:.2s}
+.dx-lyrics-upload:hover,.dx-lyrics-clear:hover{border-color:var(--text);transform:translateY(-1px)}
+.dx-lyrics-clear[hidden]{display:none}
+.dx-lyrics-body{position:relative;min-height:205px;max-height:340px;overflow:auto;overscroll-behavior:contain;border-radius:10px;background:linear-gradient(135deg,color-mix(in srgb,var(--bg) 90%,transparent),color-mix(in srgb,var(--panel) 72%,transparent));scrollbar-width:thin;scrollbar-color:var(--muted) transparent}
+.dx-lyrics-empty{min-height:205px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:25px;text-align:center;color:var(--muted)}
+.dx-lyrics-empty>span{font-size:27px;opacity:.65}
+.dx-lyrics-empty b{margin:8px 0 3px;color:var(--text);font:700 15px 'Space Grotesk'}
+.dx-lyrics-empty p{max-width:390px;margin:3px 0 8px;font-size:11px;line-height:1.7}
+.dx-lyrics-empty small{font-size:9px;opacity:.7}
+.dx-lyrics-lines{display:grid;gap:4px;padding:45px clamp(14px,4vw,36px);text-align:left}
+.dx-lyric-line{width:100%;padding:8px 0;border:0;background:transparent;color:var(--muted);font:600 clamp(15px,2.1vw,21px)/1.45 'DM Sans',sans-serif;text-align:left;cursor:pointer;opacity:.48;transform-origin:left;transition:color .25s,opacity .25s,transform .25s}
+.dx-lyric-line:hover{opacity:.85;color:var(--text)}
+.dx-lyric-line.is-past{opacity:.55}
+.dx-lyric-line.is-current{color:var(--text);opacity:1;transform:scale(1.025);font-weight:800;text-shadow:0 0 22px color-mix(in srgb,var(--text) 16%,transparent)}
+.dx-lyrics-foot{display:flex;justify-content:space-between;gap:12px;margin-top:12px;color:var(--muted);font:700 7px 'Space Grotesk';letter-spacing:1px}
+@media(max-width:520px){.dx-lyrics-head{align-items:flex-start}.dx-lyrics-actions{flex-direction:column;align-items:stretch}.dx-lyrics-upload,.dx-lyrics-clear{font-size:7px;padding:8px}.dx-lyrics-body{min-height:180px}.dx-lyrics-foot{font-size:6px}}
