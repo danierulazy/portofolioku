@@ -27,3 +27,28 @@
 .cx *{position:absolute;box-sizing:border-box}
 .cx-cap{left:0;right:0;bottom:9%;text-align:center;font:700 clamp(10px,1.6vw,15px) 'Space Grotesk',sans-serif;letter-spacing:.4em;text-shadow:0 2px 18px #000;white-space:nowrap}
 .cx img{max-width:none}
+
+/* Karakter rahasia */
+.fx-pet{position:fixed;left:0;top:0;width:52px;pointer-events:none;z-index:9990;filter:drop-shadow(0 4px 10px var(--fx))}
+.fx-pet svg{display:block;animation:fxbob 1.2s ease-in-out infinite alternate}
+@keyframes fxbob{to{transform:translateY(-6px) rotate(4deg)}}
+.fx-roster{border:1px solid #fff2;border-radius:20px;background:#0c0d14f2;color:#fff;padding:20px;width:min(92vw,620px);font-family:'DM Sans',sans-serif}
+.fx-roster::backdrop{background:#000a;backdrop-filter:blur(6px)}
+.fx-roster h3{margin:0 0 14px;font:700 18px 'Space Grotesk',sans-serif}
+.rg{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.rg article{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:14px;border:1px solid #fff2;text-align:center}
+.rg article.on{border-color:var(--c);box-shadow:0 0 18px -6px var(--c)}
+.rg article.eq{background:#ffffff14}
+.rg small{font-size:11px;opacity:.7}
+.rg article:not(.on) svg{filter:brightness(0) opacity(.45)}
+.cx-av{width:72px}
+.rg button,.rx{all:unset;cursor:pointer;margin-top:6px;padding:5px 12px;border-radius:99px;background:var(--c,#fff3);font-size:12px;font-weight:600;color:#fff}
+.rx{display:block;margin:14px 0 0 auto;background:#fff2}
+.rg button:focus-visible,.rx:focus-visible{outline:2px solid #fff}
+.cx .cx-card{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:28px 34px;border-radius:24px;border:2px solid var(--c);background:#0d0e18;box-shadow:0 0 80px -10px var(--c);max-width:88vw}
+.cx .cx-card *{position:static}
+.cx-card .cx-av{width:min(40vw,170px)}
+.cx-card small{letter-spacing:.3em;font-size:11px;color:var(--c)}
+.cx-card b{font:800 clamp(28px,6vw,44px) 'Space Grotesk',sans-serif}
+.cx-card em{opacity:.8}.cx-card p{margin:6px 0 0;max-width:30ch;opacity:.9}
+@media (prefers-reduced-motion:reduce){.fx-pet svg{animation:none}}

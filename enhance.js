@@ -3,9 +3,11 @@
 'use strict';
 const $=(s,r=document)=>r.querySelector(s),B=document.body,R=document.documentElement;
 const ls={g:k=>{try{return localStorage.getItem(k)}catch(e){return null}},s:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+const CH={matrix:['Cipher','Hacker dari balik layar','Semua pintu punya celah. Tinggal cari kodenya.','#19e36b','Ketik nama film hacker klasik itu.',0],disco:['Groove','Penguasa lantai dansa','Hidup lebih enak dengan beat.','#ff4fd8','Ketik tempat berdansa dengan bola kilau.',1],danil:['Danieru','Si pembuat dunia ini','Belajar sesuatu. Buat sesuatu.','#ffb703','Ketik nama panggilanmu.',2],glitch:['Glitch','Bug yang jadi teman','Error itu fitur yang belum dimengerti.','#00e5ff','Klik judul besar 3× dengan cepat.',3],dot:['Dotty','Penjaga status online','Selalu available, selalu hijau!','#35e08a','Klik titik hijau 5×.',4],konami:['Pixel','Pahlawan 8-bit','Tiga puluh nyawa sudah cukup.','#ff6a3d','Masukkan kode klasik di keyboard.',5],logo:['AD Prime','Bentuk akhir sang kreator','Satu logo, seribu cerita.','#ffd166','Klik dua kali logo AD.',6]};
+let eq=ls.g('dx-eq')||'',own=[];try{own=JSON.parse(ls.g('dx-chars')||'[]')}catch(e){}
 const COL={dark:'#7c5cff',light:'#ffb703',onepiece:'#19a7ce',zio:'#ff2d9a',spider:'#e62429'};
 const calm=()=>matchMedia('(prefers-reduced-motion: reduce)').matches||/reduce/i.test(B.className+R.className);
-const col=()=>COL[B.dataset.theme]||COL.dark;
+const col=()=>(eq&&CH[eq]?CH[eq][3]:COL[B.dataset.theme])||COL.dark;
 let ac,mg,sfxOn=ls.g('dx-sfx')!=='0',ambOn=ls.g('dx-amb')!=='0',vol=+(ls.g('dx-vol')||.7),stopAmb=()=>{};
 
 /* ---------- Audio engine ---------- */
@@ -102,19 +104,47 @@ spider(){
 const _a=window.applyTheme;
 if(typeof _a==='function')window.applyTheme=function(t,a=true){
  const p=B.dataset.theme;_a.apply(this,arguments);
- const n=B.dataset.theme;R.style.setProperty('--fx',COL[n]||COL.dark);
+ const n=B.dataset.theme;R.style.setProperty('--fx',col());
  if(a&&n!==p){SCN[n]&&!calm()?SCN[n]():wipe(n);(SFX[n]||SFX.click)();ambient(n);}
 };
 R.style.setProperty('--fx',col());
 
 /* ---------- Dock suara ---------- */
 const dock=document.createElement('div');dock.className='fx-dock';
-dock.innerHTML=`<button id="dxS" aria-pressed="${sfxOn}" title="Efek suara">SFX</button><button id="dxA" aria-pressed="${ambOn}" title="Backsound sesuai tema">BGM</button><input id="dxV" type="range" min="0" max="1" step=".05" value="${vol}" aria-label="Volume efek">`;
+dock.innerHTML=`<button id="dxS" aria-pressed="${sfxOn}" title="Efek suara">SFX</button><button id="dxA" aria-pressed="${ambOn}" title="Backsound sesuai tema">BGM</button><button id="dxR" title="Karakter rahasia">★ <span id="dxN"></span></button><input id="dxV" type="range" min="0" max="1" step=".05" value="${vol}" aria-label="Volume efek">`;
 B.appendChild(dock);
 $('#dxS').onclick=e=>{sfxOn=!sfxOn;e.currentTarget.setAttribute('aria-pressed',sfxOn);ls.s('dx-sfx',sfxOn?'1':'0');SFX.click()};
 $('#dxA').onclick=e=>{ambOn=!ambOn;e.currentTarget.setAttribute('aria-pressed',ambOn);ls.s('dx-amb',ambOn?'1':'0');ambOn?ambient(B.dataset.theme):stopAmb()};
 $('#dxV').oninput=e=>{vol=+e.target.value;ls.s('dx-vol',vol);if(mg)mg.gain.value=vol*3};
 ['pointerdown','keydown'].forEach(ev=>addEventListener(ev,()=>{if(ambOn)ambient(B.dataset.theme)},{once:true}));
+
+/* ---------- Karakter rahasia: tiap easter egg membuka 1 karakter ---------- */
+function av(k){const[,,,c,,s]=CH[k],e=[[24,40],[40,40]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="6" fill="#fff"/><circle cx="${x+1}" cy="${y+1}" r="3" fill="#111"/>`).join('');
+ const acc=['<rect x="14" y="33" width="36" height="12" rx="6" fill="#0009" stroke="#fff" stroke-width="2"/>','<path d="M10 36a22 22 0 0144 0" fill="none" stroke="#fff" stroke-width="5"/><rect x="6" y="34" width="8" height="14" rx="4" fill="#fff"/><rect x="50" y="34" width="8" height="14" rx="4" fill="#fff"/>','<path d="M16 18l5-12 11 8 11-8 5 12z" fill="#ffd166" stroke="#fff"/>','<path d="M8 28h14M42 50h14M20 54h10" stroke="#fff" stroke-width="3"/>','<path d="M32 2l-5 14h10zM24 6l-3 12h8zM40 6l3 12h-8z" fill="#fff"/>','<path d="M12 12h40v6H12zM18 6h8v4h-8zM38 6h8v4h-8z" fill="#fff"/>','<ellipse cx="32" cy="7" rx="16" ry="4" fill="none" stroke="#ffd166" stroke-width="3"/>'][s];
+ return `<svg viewBox="0 0 64 64" aria-hidden="true"><defs><radialGradient id="g${k}" cx=".35" cy=".3"><stop offset="0" stop-color="#fff"/><stop offset=".25" stop-color="${c}"/><stop offset="1" stop-color="#0007"/></radialGradient></defs><circle cx="32" cy="36" r="26" fill="url(#g${k})"/>${e}<path d="M24 50q8 6 16 0" stroke="#111" stroke-width="3" fill="none" stroke-linecap="round"/>${acc}</svg>`}
+const ids=Object.keys(CH);let pet,pp={x:innerWidth/2,y:innerHeight/2},pq={x:pp.x,y:pp.y};
+const save=()=>{ls.s('dx-chars',JSON.stringify(own));ls.s('dx-eq',eq)};
+const note=t=>{const e=$('#toast');if(e){e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3200)}};
+const upd=()=>{$('#dxN').textContent=own.length+'/'+ids.length};
+function mkPet(){pet?.remove();pet=null;R.style.setProperty('--fx',col());if(eq&&CH[eq])pet=mk(B,'div','fx-pet','',av(eq))}
+(function loop(){if(pet){pq.x+=(pp.x-pq.x)*.12;pq.y+=(pp.y-pq.y)*.12;pet.style.transform=`translate(${pq.x+18}px,${pq.y+18}px)`}requestAnimationFrame(loop)})();
+addEventListener('pointermove',e=>{pp.x=e.clientX;pp.y=e.clientY});
+function giveChar(k){
+ if(!CH[k]||own.includes(k))return;own.push(k);save();upd();
+ const c=CH[k],s=stage('rgba(5,5,14,.88)',3400);
+ A(mk(s,'div','cx-card',`--c:${c[3]}`,`<div class="cx-av">${av(k)}</div><small>SECRET CHARACTER UNLOCKED</small><b>${c[0]}</b><em>${c[1]}</em><p>“${c[2]}”</p>`),[{transform:'translateY(60px) scale(.6) rotate(-6deg)',opacity:0},{transform:'none',opacity:1}],{duration:900,easing:'cubic-bezier(.2,1.4,.3,1)'});
+ burst(innerWidth/2,innerHeight/2,40,c[3]);arp([523,659,784,1047,1319,1568],.35,'triangle',.16,.1);
+}
+const dlg=mk(B,'dialog','fx-roster');
+function roster(){
+ dlg.innerHTML=`<h3>Karakter rahasia · ${own.length}/${ids.length}</h3><div class="rg">`+ids.map(k=>{const c=CH[k],on=own.includes(k);return `<article class="${on?'on':''} ${eq===k?'eq':''}" style="--c:${c[3]}"><div class="cx-av">${av(k)}</div><b>${on?c[0]:'???'}</b><small>${on?c[1]:c[4]}</small>${on?`<button data-k="${k}">${eq===k?'Lepas':'Pakai'}</button>`:''}</article>`}).join('')+`</div><button class="rx" data-x>Tutup ×</button>`;
+ if(!dlg.open)dlg.showModal();
+}
+dlg.onclick=e=>{const b=e.target.closest('button');if(e.target===dlg||(b&&b.dataset.x!==undefined)){dlg.close();return}const k=b?.dataset.k;if(k){eq=eq===k?'':k;save();mkPet();if(eq)note(CH[k][0]+': “'+CH[k][2]+'”');SFX.win();roster()}};
+$('#dxR').onclick=roster;
+const vl=$('#vaultList');
+if(vl)new MutationObserver(()=>['konami','logo'].forEach(k=>vl.querySelector(`[data-secret="${k}"]`)?.classList.contains('unlocked')&&giveChar(k))).observe(vl,{subtree:true,attributes:true,attributeFilter:['class']});
+upd();mkPet();
 
 /* ---------- Interaksi ---------- */
 document.addEventListener('click',e=>{burst(e.clientX,e.clientY,6);if(e.target.closest('a,button,.work-card,.track'))SFX.click()},true);
@@ -130,6 +160,7 @@ if(st)new MutationObserver(()=>{if(st.classList.contains('show'))SFX.win()}).obs
 /* ---------- Easter egg baru (5) ---------- */
 const EG=JSON.parse(ls.g('dx-eggs')||'[]');
 function egg(k,msg){
+ giveChar(k);
  if(!EG.includes(k)){EG.push(k);ls.s('dx-eggs',JSON.stringify(EG));}
  SFX.win();const t=$('#toast');
  if(t){t.textContent='✦ EGG '+EG.length+'/5 · '+msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
