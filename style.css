@@ -707,3 +707,27 @@ body.retro-secret .main{filter:saturate(.82)}
 body.retro-secret .brand-mark,body.retro-secret .hero h1{font-family:monospace;text-shadow:0 0 14px rgba(102,255,140,.25)}
 body.retro-secret .section{position:relative}
 body.retro-secret .section:after{content:'';position:absolute;inset:0;pointer-events:none;opacity:.1;background:repeating-linear-gradient(to bottom,transparent 0 3px,rgba(102,255,140,.13) 4px)}
+
+
+/* Creator Terminal — hidden command console */
+.creator-terminal{width:min(720px,94vw);max-width:none;max-height:88vh;padding:0;border:1px solid rgba(108,255,158,.28);border-radius:13px;background:#080d0b;color:#d5f7df;box-shadow:0 35px 120px rgba(0,0,0,.72);overflow:hidden}
+.creator-terminal::backdrop{background:rgba(0,0,0,.82);backdrop-filter:blur(12px)}
+.terminal-shell{padding:clamp(18px,4vw,32px);font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.terminal-top{display:flex;justify-content:space-between;align-items:flex-start;gap:15px}
+.terminal-top .eyebrow{color:#63d98c}
+.terminal-top h2{font:700 clamp(28px,5vw,42px) 'Space Grotesk';letter-spacing:-1.5px;margin:9px 0 20px;color:#effff3}
+.terminal-top h2 em{font-style:normal;color:#72ed9a}
+.terminal-status{display:flex;align-items:center;gap:9px;padding:11px 13px;border:1px solid rgba(108,255,158,.18);border-radius:5px;background:rgba(67,255,133,.045);font-size:8px;letter-spacing:1.2px;color:#8fcca2}
+.terminal-status i{width:7px;height:7px;border-radius:50%;background:#55ef87;box-shadow:0 0 12px #55ef87}
+.terminal-status span{margin-left:auto;color:#638c70}
+.terminal-output{height:220px;overflow:auto;padding:16px 2px 10px;border-bottom:1px solid rgba(108,255,158,.16);font-size:11px;line-height:1.8}
+.terminal-line{margin:0 0 6px;white-space:pre-wrap;overflow-wrap:anywhere}
+.terminal-line.command{color:#e7fff0}
+.terminal-line.response{color:#82b991}
+.terminal-line.success{color:#7bffa0}
+.terminal-line.error{color:#ff8585}
+.terminal-input-row{display:flex;align-items:center;gap:10px;padding:16px 0 8px;color:#7bffa0;font-size:10px}
+.terminal-input-row input{min-width:0;flex:1;border:0;outline:0;background:transparent;color:#f2fff5;font:inherit;caret-color:#7bffa0}
+.terminal-input-row input::placeholder{color:#557760}
+.terminal-hint{font-size:8px;letter-spacing:1px;color:#62816b}
+@media(max-width:520px){.terminal-output{height:190px}.terminal-input-row{align-items:flex-start;flex-direction:column;gap:8px}.terminal-input-row input{width:100%}}
