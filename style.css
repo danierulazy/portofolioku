@@ -731,3 +731,66 @@ body.retro-secret .section:after{content:'';position:absolute;inset:0;pointer-ev
 .terminal-input-row input::placeholder{color:#557760}
 .terminal-hint{font-size:8px;letter-spacing:1px;color:#62816b}
 @media(max-width:520px){.terminal-output{height:190px}.terminal-input-row{align-items:flex-start;flex-direction:column;gap:8px}.terminal-input-row input{width:100%}}
+
+
+/* Danieru Multiverse Room — quest and achievement interface */
+.dx-multiverse-room{width:min(960px,96vw);max-width:none;max-height:91vh;padding:0;border:1px solid var(--line);border-radius:18px;background:var(--bg);color:var(--text);box-shadow:0 35px 120px rgba(0,0,0,.65);overflow:auto}
+.dx-multiverse-room::backdrop{background:rgba(2,4,10,.82);backdrop-filter:blur(15px)}
+.dx-room-shell{padding:clamp(18px,4vw,34px)}
+.dx-room-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.dx-room-head h2{font:700 clamp(28px,5vw,44px) 'Space Grotesk';letter-spacing:-1.7px;margin:9px 0}
+.dx-room-head h2 em{font-style:normal;color:var(--accent)}
+.dx-room-head p{color:var(--muted);font-size:12px;line-height:1.6}
+.dx-room-tabs{display:flex;gap:6px;margin:24px 0 20px;border-bottom:1px solid var(--line);overflow:auto}
+.dx-room-tabs button{flex:none;padding:12px 15px;border:0;border-bottom:2px solid transparent;background:transparent;color:var(--muted);font:700 9px 'Space Grotesk';letter-spacing:1px;cursor:pointer}
+.dx-room-tabs button.active{color:var(--text);border-color:var(--accent)}
+.dx-room-tabs button b{margin-left:5px;color:var(--accent)}
+.dx-room-intro{display:grid;gap:6px;margin-bottom:16px}
+.dx-room-intro span{font:700 8px 'Space Grotesk';letter-spacing:1.4px;color:var(--muted)}
+.dx-room-intro>b{font:700 17px 'Space Grotesk'}
+.dx-world-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.dx-world-card{position:relative;min-height:300px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;border:1px solid var(--line);border-radius:11px;background:var(--panel);isolation:isolate}
+.dx-world-card:before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 15%,rgba(4,5,10,.2) 38%,rgba(4,5,10,.96) 100%)}
+.dx-world-card>img{position:absolute;z-index:-2;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%;opacity:.75;transition:transform .6s,opacity .4s}
+.dx-world-card.sp>img{object-fit:contain;object-position:center 12%;padding:15px}
+.dx-world-card.zi>img{object-fit:contain;padding:24px}
+.dx-world-card:hover>img{transform:scale(1.06);opacity:.95}
+.dx-world-card>div{padding:18px}
+.dx-world-card small{font:700 7px 'Space Grotesk';letter-spacing:1.2px;color:#d8d8e1}
+.dx-world-card h3{font:700 22px 'Space Grotesk';margin:7px 0;color:white}
+.dx-world-card p{font-size:10px;line-height:1.5;color:#c5c5d0;min-height:30px}
+.dx-world-card button,.dx-room-actions button{border:1px solid rgba(255,255,255,.28);border-radius:5px;background:rgba(255,255,255,.08);color:white;padding:10px 12px;font:700 8px 'Space Grotesk';letter-spacing:1px;cursor:pointer}
+.dx-world-card button:hover,.dx-room-actions button:hover{background:var(--accent);color:#09090d;border-color:var(--accent)}
+.dx-room-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}
+.dx-room-actions button{color:var(--text);border-color:var(--line);background:var(--panel)}
+.dx-room-foot{display:flex;justify-content:space-between;gap:10px;margin-top:24px;padding-top:14px;border-top:1px solid var(--line);font:700 7px 'Space Grotesk';letter-spacing:1px;color:var(--muted)}
+.dx-xp-row{display:flex;align-items:center;gap:14px;padding:15px;border:1px solid var(--line);border-radius:9px;background:var(--panel);margin-bottom:14px}
+.dx-xp-row>div:first-child{display:grid;gap:4px;min-width:82px}
+.dx-xp-row small{font:700 7px 'Space Grotesk';letter-spacing:1px;color:var(--muted)}
+.dx-xp-row strong{font:700 17px 'Space Grotesk'}
+.dx-xp-track{height:6px;flex:1;border-radius:9px;background:var(--panel2);overflow:hidden}
+.dx-xp-track i{display:block;width:0;height:100%;background:var(--accent);transition:width .4s}
+.dx-xp-row>span{font:700 9px 'Space Grotesk';color:var(--muted)}
+.dx-quest-list{display:grid;gap:8px}
+.dx-quest{display:flex;align-items:center;gap:12px;padding:13px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.dx-quest>i{width:28px;height:28px;display:grid;place-items:center;flex:none;border-radius:50%;background:var(--panel2);font-style:normal;color:var(--muted)}
+.dx-quest.done>i{background:var(--accent);color:#09090d}
+.dx-quest>div{flex:1;display:grid;gap:4px}
+.dx-quest b{font:700 11px 'Space Grotesk'}
+.dx-quest small{font-size:9px;color:var(--muted)}
+.dx-quest em{font:700 8px 'Space Grotesk';font-style:normal;color:var(--accent)}
+.dx-achievement-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.dx-achievement{min-height:110px;padding:13px;border:1px solid var(--line);border-radius:8px;background:var(--panel);display:grid;align-content:start;gap:7px}
+.dx-achievement>span{font-size:20px;filter:grayscale(1);opacity:.45}
+.dx-achievement.done{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 7%,var(--panel))}
+.dx-achievement.done>span{filter:none;opacity:1}
+.dx-achievement b{font:700 10px 'Space Grotesk'}
+.dx-achievement small{font-size:9px;color:var(--muted);line-height:1.4}
+.dx-room-launcher{position:fixed;z-index:1100;right:20px;bottom:20px;display:flex;align-items:center;gap:9px;padding:11px 14px;border:1px solid var(--line);border-radius:40px;background:var(--panel);color:var(--text);box-shadow:0 12px 40px rgba(0,0,0,.25);cursor:pointer;transition:transform .2s,border-color .2s}
+.dx-room-launcher:hover{transform:translateY(-3px);border-color:var(--accent)}
+.dx-room-launcher>span{color:var(--accent);font-size:16px}
+.dx-room-launcher b{font:700 8px 'Space Grotesk';letter-spacing:1px}
+.dx-room-launcher small{padding:4px 6px;border-radius:10px;background:var(--panel2);color:var(--muted);font:700 8px 'Space Grotesk'}
+@media(max-width:700px){.dx-world-grid{grid-template-columns:1fr}.dx-world-card{min-height:230px}.dx-world-card>img{object-position:center 30%}.dx-achievement-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.dx-room-shell{padding:17px}.dx-room-launcher{right:12px;bottom:12px}.dx-room-launcher b{font-size:7px}.dx-xp-row{gap:8px}.dx-room-foot{font-size:6px}}
+@media(prefers-reduced-motion:reduce){.dx-world-card>img,.dx-xp-track i,.dx-room-launcher{transition:none}}
