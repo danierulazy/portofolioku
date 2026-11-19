@@ -1,0 +1,22 @@
+/* Danieru Space — enhance layer styles */
+:root{--fx:#7c5cff}
+.fx-wipe{position:fixed;inset:0;z-index:9999;pointer-events:none;background:radial-gradient(circle at var(--x) var(--y),#fff3 0,var(--c) 18%,#05050a 120%);clip-path:circle(0 at var(--x) var(--y));animation:fxwipe 1.1s cubic-bezier(.7,0,.2,1) forwards}
+@keyframes fxwipe{0%{clip-path:circle(0 at var(--x) var(--y));opacity:1}55%{clip-path:circle(150% at var(--x) var(--y));opacity:1}100%{clip-path:circle(150% at var(--x) var(--y));opacity:0}}
+.fx-p{position:fixed;width:6px;height:6px;margin:-3px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c);pointer-events:none;z-index:9997;animation:fxp .85s ease-out forwards}
+@keyframes fxp{to{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}}
+.fx-shake{animation:fxshake .5s}
+@keyframes fxshake{20%{transform:translate(-5px,3px)}40%{transform:translate(5px,-3px)}60%{transform:translate(-3px,-2px)}80%{transform:translate(3px,2px)}}
+.fx-tilt{transform:perspective(800px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .15s ease-out}
+.fx-dock{position:fixed;right:14px;top:50%;transform:translateY(-50%);z-index:90;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 6px;border-radius:999px;background:rgba(16,17,22,.72);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.14);color:#fff;font:600 11px 'DM Sans',sans-serif}
+.fx-dock button{all:unset;cursor:pointer;padding:5px 9px;border-radius:99px;opacity:.55;transition:opacity .2s,background .2s}
+.fx-dock button[aria-pressed="true"]{opacity:1;background:var(--fx)}
+.fx-dock button:focus-visible,.fx-dock input:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.fx-dock input{width:60px;accent-color:var(--fx);transform:rotate(-90deg);margin:24px -14px}
+.fx-matrix{position:fixed;inset:0;z-index:9996;pointer-events:none;background:#0008;transition:opacity .8s}
+.fx-matrix.out{opacity:0}
+.fx-disco{animation:fxdisco 1.2s linear infinite}
+@keyframes fxdisco{to{filter:hue-rotate(360deg)}}
+.fx-glitch{animation:fxglitch .25s steps(2) 5}
+@keyframes fxglitch{0%{text-shadow:3px 0 #f0f,-3px 0 #0ff;transform:translateX(-3px)}50%{text-shadow:-3px 0 #f0f,3px 0 #0ff;transform:translateX(3px)}100%{text-shadow:none;transform:none}}
+@media (prefers-reduced-motion:reduce){.fx-wipe,.fx-shake,.fx-disco,.fx-glitch{animation:none}}
+@media (max-width:700px){.fx-dock{top:auto;bottom:76px;transform:none;flex-direction:row;padding:6px 10px}.fx-dock input{transform:none;margin:0;width:70px}}
