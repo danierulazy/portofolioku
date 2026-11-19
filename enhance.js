@@ -119,7 +119,8 @@ $('#dxV').oninput=e=>{vol=+e.target.value;ls.s('dx-vol',vol);if(mg)mg.gain.value
 ['pointerdown','keydown'].forEach(ev=>addEventListener(ev,()=>{if(ambOn)ambient(B.dataset.theme)},{once:true}));
 
 /* ---------- Karakter rahasia: tiap easter egg membuka 1 karakter ---------- */
-function av(k){const[,,,c,,s]=CH[k],e=[[24,40],[40,40]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="6" fill="#fff"/><circle cx="${x+1}" cy="${y+1}" r="3" fill="#111"/>`).join('');
+function av(k){return avs(CH[k][3],CH[k][5],k)}
+function avs(c,s,k){const e=[[24,40],[40,40]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="6" fill="#fff"/><circle cx="${x+1}" cy="${y+1}" r="3" fill="#111"/>`).join('');
  const acc=['<rect x="14" y="33" width="36" height="12" rx="6" fill="#0009" stroke="#fff" stroke-width="2"/>','<path d="M10 36a22 22 0 0144 0" fill="none" stroke="#fff" stroke-width="5"/><rect x="6" y="34" width="8" height="14" rx="4" fill="#fff"/><rect x="50" y="34" width="8" height="14" rx="4" fill="#fff"/>','<path d="M16 18l5-12 11 8 11-8 5 12z" fill="#ffd166" stroke="#fff"/>','<path d="M8 28h14M42 50h14M20 54h10" stroke="#fff" stroke-width="3"/>','<path d="M32 2l-5 14h10zM24 6l-3 12h8zM40 6l3 12h-8z" fill="#fff"/>','<path d="M12 12h40v6H12zM18 6h8v4h-8zM38 6h8v4h-8z" fill="#fff"/>','<ellipse cx="32" cy="7" rx="16" ry="4" fill="none" stroke="#ffd166" stroke-width="3"/>'][s];
  return `<svg viewBox="0 0 64 64" aria-hidden="true"><defs><radialGradient id="g${k}" cx=".35" cy=".3"><stop offset="0" stop-color="#fff"/><stop offset=".25" stop-color="${c}"/><stop offset="1" stop-color="#0007"/></radialGradient></defs><circle cx="32" cy="36" r="26" fill="url(#g${k})"/>${e}<path d="M24 50q8 6 16 0" stroke="#111" stroke-width="3" fill="none" stroke-linecap="round"/>${acc}</svg>`}
 const ids=Object.keys(CH);let pet,pp={x:innerWidth/2,y:innerHeight/2},pq={x:pp.x,y:pp.y};
@@ -145,6 +146,55 @@ $('#dxR').onclick=roster;
 const vl=$('#vaultList');
 if(vl)new MutationObserver(()=>['konami','logo'].forEach(k=>vl.querySelector(`[data-secret="${k}"]`)?.classList.contains('unlocked')&&giveChar(k))).observe(vl,{subtree:true,attributes:true,attributeFilter:['class']});
 upd();mkPet();
+
+/* ---------- Danieru Arena: mini game fight, satu hero per tema ---------- */
+const H={dark:['Umbra','#7c5cff',0,'Shadow Dash'],light:['Lumi','#ffb703',6,'Nova Cahaya'],onepiece:['Kapten Layar','#19a7ce',2,'Pukulan Karet'],zio:['Kronos','#ff2d9a',5,'Henti Waktu'],spider:['Webby','#e62429',3,'Tembak Jaring']};
+const SEC={dark:'glitch',light:'disco',onepiece:'dot',zio:'matrix',spider:'konami'};
+const toImg=s=>{const i=new Image();i.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(s.replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" '));return i};
+const arena=mk(B,'dialog','fx-arena');let stopArena=()=>{};
+arena.addEventListener('close',()=>stopArena());
+function openArena(){
+ let hk=H[B.dataset.theme]?B.dataset.theme:'dark';
+ arena.innerHTML=`<div class="ar-top"><b>Danieru Arena</b><span id="arS"></span><button class="rx" data-x>Tutup ×</button></div><div class="ar-pick">${Object.keys(H).map(k=>`<button data-h="${k}" style="--c:${H[k][1]}">${H[k][0]}</button>`).join('')}</div><canvas id="arC" width="800" height="360"></canvas><div class="ar-hud" id="arH"></div><div class="ar-help">Gerak <kbd>A</kbd><kbd>D</kbd> · Lompat <kbd>W</kbd> · Serang <kbd>J</kbd> · Skill <kbd>K</kbd> · Ultimate <kbd>L</kbd> (form rahasia)</div><div class="ar-touch">${[['a','◀'],['d','▶'],['w','⤒'],['j','⚔'],['k','✦'],['l','★']].map(([k,t])=>`<button data-key="${k}">${t}</button>`).join('')}</div>`;
+ const cv=$('#arC'),g=cv.getContext('2d'),W=800,GY=300,keys={},M={arrowleft:'a',arrowright:'d',arrowup:'w',' ':'w'};
+ let P,E,F,wave,score,over,wt,last=performance.now(),raf;
+ const kd=e=>{const k=M[e.key.toLowerCase()]||e.key.toLowerCase();keys[k]=1;if('wasdjkl'.includes(k)&&k.length==1)e.preventDefault()},ku=e=>{keys[M[e.key.toLowerCase()]||e.key.toLowerCase()]=0};
+ document.addEventListener('keydown',kd);document.addEventListener('keyup',ku);
+ stopArena=()=>{cancelAnimationFrame(raf);document.removeEventListener('keydown',kd);document.removeEventListener('keyup',ku);stopArena=()=>{}};
+ const fx=(x,y,c,n=10)=>{for(let i=0;i<n;i++)F.push({x,y,vx:(Math.random()-.5)*300,vy:-Math.random()*250,l:.5,c})};
+ function wv(){wave++;const n=wave%5?2+wave:1;for(let i=0;i<n;i++){const b=!(wave%5);E.push({x:i%2?-40-i*50:W+40+i*50,y:GY,hp:b?150+wave*10:18+wave*3,mx:b?150+wave*10:18+wave*3,sp:(b?35:45+Math.random()*30)+wave*2,w:b?70:34,cd:0,fz:0,sl:0,b})}}
+ function start(){const h=H[hk],sc=own.includes(SEC[hk]);P={x:120,y:GY,vy:0,hp:100,f:1,ac:0,sk:0,ul:0,inv:0,sc,img:toImg(avs(sc?'#ffd166':h[1],sc?6:h[2],'a'+hk+sc))};E=[];F=[];wave=0;score=0;over=0;wt=0;wv();$('#arS').textContent=sc?'✦ FORM RAHASIA AKTIF':'Form rahasia: buka karakter '+CH[SEC[hk]][0]}
+ function hit(cx,r,d){const dm=d*(P.sc?1.5:1);E.forEach(e=>{if(Math.abs(e.x-cx)<r+e.w/2&&Math.abs(e.y-P.y)<80){e.hp-=dm;e.x+=P.f*14;fx(e.x,e.y-20,H[hk][1],5);SFX.tick()}})}
+ function step(dt){
+  if(over){if(keys.j)start();return}
+  const dir=(keys.d?1:0)-(keys.a?1:0);P.x=Math.max(20,Math.min(W-20,P.x+dir*230*dt));if(dir)P.f=dir;
+  if(keys.w&&P.y>=GY)P.vy=-540;P.vy+=1500*dt;P.y=Math.min(GY,P.y+P.vy*dt);
+  P.ac-=dt;P.sk-=dt;P.ul-=dt;P.inv-=dt;
+  if(keys.j&&P.ac<=0){P.ac=.28;hit(P.x+P.f*42,52,10);tone(260,.06,'square',.12,0,140)}
+  if(keys.k&&P.sk<=0){P.sk=5;const t=hk;if(t==='dark'){P.x=Math.max(20,Math.min(W-20,P.x+P.f*260));P.inv=.5;hit(P.x-P.f*130,140,30)}else if(t==='light'){hit(P.x,210,24);P.hp=Math.min(100,P.hp+15)}else if(t==='onepiece')hit(P.x+P.f*180,150,30);else if(t==='zio')E.forEach(e=>e.fz=3);else E.forEach(e=>{if(Math.abs(e.x-P.x)<340){e.sl=4;e.hp-=15}});fx(P.x,P.y-30,H[hk][1],24);arp([392,587,784],.2,'sawtooth',.12,.05)}
+  if(keys.l&&P.sc&&P.ul<=0){P.ul=12;E.forEach(e=>e.hp-=45);fx(W/2,GY-40,'#ffd166',60);arp([262,330,392,523,659,784],.3,'triangle',.16,.05);$('.main')?.classList.add('fx-shake');setTimeout(()=>$('.main')?.classList.remove('fx-shake'),550)}
+  E.forEach(e=>{e.cd-=dt;if(e.fz>0){e.fz-=dt;return}e.sl-=dt;const d=P.x-e.x;e.x+=Math.sign(d)*e.sp*(e.sl>0?.3:1)*dt;if(Math.abs(d)<e.w/2+14&&Math.abs(P.y-e.y)<50&&e.cd<=0&&P.inv<=0){P.hp-=e.b?14:7;e.cd=1;P.inv=.6;fx(P.x,P.y-30,'#f33',8);tone(120,.15,'sawtooth',.15,0,60)}});
+  E=E.filter(e=>{if(e.hp>0)return true;score+=e.b?50:10;fx(e.x,e.y-20,'#fff',12);return false});
+  if(!E.length){wt+=dt;if(wt>.9){wt=0;wv()}}
+  if(P.hp<=0){over=1;arp([300,220,160,100],.3,'sawtooth',.14,.15)}
+ }
+ function draw(){
+  const c=H[hk][1],gr=g.createLinearGradient(0,0,0,360);gr.addColorStop(0,'#07070f');gr.addColorStop(1,c+'66');g.fillStyle=gr;g.fillRect(0,0,W,360);g.fillStyle=c+'55';g.fillRect(0,GY+2,W,60);
+  E.forEach(e=>{g.fillStyle=e.fz>0?'#8ef':e.b?'#7a2cff':'#e5484d';g.beginPath();g.roundRect(e.x-e.w/2,e.y-e.w,e.w,e.w,12);g.fill();g.fillStyle='#fff';g.fillRect(e.x-e.w/4,e.y-e.w*.65,5,7);g.fillRect(e.x+e.w/8,e.y-e.w*.65,5,7);g.fillStyle='#0008';g.fillRect(e.x-e.w/2,e.y-e.w-8,e.w,4);g.fillStyle='#4f4';g.fillRect(e.x-e.w/2,e.y-e.w-8,e.w*Math.max(0,e.hp/e.mx),4)});
+  g.save();g.translate(P.x,P.y);if(P.f<0)g.scale(-1,1);if(P.inv>0)g.globalAlpha=.5;if(P.sc){g.shadowColor='#ffd166';g.shadowBlur=24}g.drawImage(P.img,-30,-62,60,60);g.restore();
+  if(P.ac>.14){g.strokeStyle='#fff';g.lineWidth=4;g.beginPath();g.arc(P.x+P.f*34,P.y-30,26,P.f>0?-1:2.1,P.f>0?1:4.2);g.stroke()}
+  F.forEach(p=>{g.globalAlpha=Math.max(0,p.l*2);g.fillStyle=p.c;g.fillRect(p.x,p.y,4,4)});g.globalAlpha=1;
+  if(over){g.fillStyle='#000a';g.fillRect(0,0,W,360);g.fillStyle='#fff';g.textAlign='center';g.font='700 34px Space Grotesk,sans-serif';g.fillText('GAME OVER · Skor '+score,W/2,170);g.font='16px DM Sans,sans-serif';g.fillText('Tekan J atau ⚔ untuk main lagi',W/2,205);g.textAlign='left'}
+  $('#arH').textContent=`HP ${Math.max(0,P.hp|0)} · Wave ${wave} · Skor ${score} · K ${H[hk][3]} ${P.sk>0?P.sk.toFixed(1)+'s':'SIAP'}${P.sc?' · L '+(P.ul>0?P.ul.toFixed(0)+'s':'SIAP'):''}`;
+ }
+ function loop(n){const dt=Math.min(.05,(n-last)/1000);last=n;step(dt);F.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=600*dt;p.l-=dt});F=F.filter(p=>p.l>0);draw();raf=requestAnimationFrame(loop)}
+ arena.onclick=e=>{const b=e.target.closest('button');if(e.target===arena||(b&&b.dataset.x!==undefined)){arena.close();return}if(b?.dataset.h){hk=b.dataset.h;start()}};
+ arena.onpointerdown=e=>{const k=e.target.closest('[data-key]')?.dataset.key;if(k)keys[k]=1};
+ arena.onpointerup=arena.onpointercancel=()=>['a','d','w','j','k','l'].forEach(k=>keys[k]=0);
+ start();if(!arena.open)arena.showModal();raf=requestAnimationFrame(loop);
+}
+$('#dxR').insertAdjacentHTML('afterend','<button id="dxG" title="Danieru Arena (mini game)">⚔</button>');$('#dxG').onclick=openArena;
+const _mm=$('#openMemoryGame');if(_mm){const b=document.createElement('button');b.type='button';b.className='arcade-launch';b.innerHTML='PLAY DANIERU ARENA <span>↗</span>';b.onclick=openArena;_mm.after(b)}
 
 /* ---------- Interaksi ---------- */
 document.addEventListener('click',e=>{burst(e.clientX,e.clientY,6);if(e.target.closest('a,button,.work-card,.track'))SFX.click()},true);

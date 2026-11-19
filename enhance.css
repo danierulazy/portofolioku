@@ -52,3 +52,16 @@
 .cx-card b{font:800 clamp(28px,6vw,44px) 'Space Grotesk',sans-serif}
 .cx-card em{opacity:.8}.cx-card p{margin:6px 0 0;max-width:30ch;opacity:.9}
 @media (prefers-reduced-motion:reduce){.fx-pet svg{animation:none}}
+
+/* Danieru Arena */
+.fx-arena{border:1px solid #fff2;border-radius:20px;background:#0c0d14;color:#fff;padding:16px;width:min(96vw,860px);font-family:'DM Sans',sans-serif}
+.fx-arena::backdrop{background:#000b;backdrop-filter:blur(6px)}
+.ar-top{display:flex;align-items:center;gap:12px}.ar-top b{font:700 18px 'Space Grotesk',sans-serif}.ar-top span{font-size:12px;opacity:.8;flex:1}.ar-top .rx{margin:0}
+.ar-pick{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.ar-pick button,.ar-touch button{all:unset;cursor:pointer;padding:6px 12px;border-radius:99px;background:var(--c,#fff2);font-size:12px;font-weight:600}
+.ar-pick button:focus-visible,.ar-touch button:focus-visible{outline:2px solid #fff}
+.fx-arena canvas{width:100%;height:auto;border-radius:12px;display:block;background:#07070f}
+.ar-hud{margin-top:8px;font:600 12px 'Space Grotesk',sans-serif}.ar-help{margin-top:4px;font-size:11px;opacity:.65}
+.ar-help kbd{border:1px solid #fff4;border-radius:4px;padding:0 4px;margin:0 2px}
+.ar-touch{display:none;gap:8px;justify-content:center;margin-top:10px;touch-action:none}.ar-touch button{padding:14px 18px;font-size:18px;background:#fff2;user-select:none}
+@media (pointer:coarse){.ar-touch{display:flex}}
