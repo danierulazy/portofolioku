@@ -815,3 +815,57 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
   panels.forEach(panel=>{const active=panel.dataset.musicPanel===target;panel.hidden=!active;panel.classList.toggle('active',active);});
  }));
 })();
+
+
+/* Synced lyrics: user-supplied LRC files only. */
+(()=>{
+ const audio=document.querySelector('#audioPlayer'),fileInput=document.querySelector('#dxLyricsFile');
+ const body=document.querySelector('#dxLyricsBody'),clear=document.querySelector('#dxLyricsClear');
+ const trackLabel=document.querySelector('#dxLyricsTrack'),status=document.querySelector('#dxLyricsStatus');
+ if(!audio||!fileInput||!body)return;
+ const keys=['song1','song2'];let currentTrack='',lines=[],activeIndex=-1;
+ const storageKey=id=>'danieru-lyrics-v1-'+id;
+ const getTrack=()=>{const src=audio.currentSrc||audio.src;return keys.find(key=>src.includes('/'+key+'.mp3'))||document.querySelector('.track.active')?.dataset.track||'';};
+ const escapeHTML=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+ function parseLRC(source){
+  const parsed=[];
+  source.replace(/^\uFEFF/,'').split(/\r?\n/).forEach(line=>{
+   const tags=[...line.matchAll(/\[(\d{1,2}):(\d{2})(?:[.:](\d{1,3}))?\]/g)];
+   const lyric=line.replace(/\[[^\]]+\]/g,'').trim();
+   if(!lyric||!tags.length)return;
+   tags.forEach(tag=>{const fraction=tag[3]||'0';const ms=fraction.length===3?Number(fraction):fraction.length===2?Number(fraction)*10:Number(fraction)*100;parsed.push({time:Number(tag[1])*60+Number(tag[2])+ms/1000,text:lyric});});
+  });
+  return parsed.sort((a,b)=>a.time-b.time);
+ }
+ function render(){
+  if(!lines.length){body.innerHTML='<div class="dx-lyrics-empty"><span>♫</span><b>Your lyrics space</b><p>Tambahkan file lirik berformat .LRC untuk menampilkan lirik yang berjalan mengikuti lagu.</p><small>File lirik disimpan hanya di browser perangkat ini.</small></div>';clear.hidden=true;status.textContent='NO LYRICS';return;}
+  body.innerHTML='<div class="dx-lyrics-lines">'+lines.map((line,index)=>'<button type="button" class="dx-lyric-line" data-lyric-index="'+index+'">'+escapeHTML(line.text)+'</button>').join('')+'</div>';
+  body.querySelectorAll('[data-lyric-index]').forEach(button=>button.addEventListener('click',()=>{const line=lines[Number(button.dataset.lyricIndex)];audio.currentTime=line.time;audio.play().catch(()=>{});}));
+  clear.hidden=false;status.textContent='LRC LOADED · '+lines.length+' LINES';activeIndex=-1;sync();
+ }
+ function sync(){
+  if(!lines.length)return;
+  let index=-1;for(let i=0;i<lines.length;i++){if(lines[i].time<=audio.currentTime)index=i;else break;}
+  if(index===activeIndex)return;
+  activeIndex=index;
+  const nodes=body.querySelectorAll('.dx-lyric-line');nodes.forEach((node,i)=>{node.classList.toggle('is-current',i===index);node.classList.toggle('is-past',i<index);});
+  if(index>=0){nodes[index]?.scrollIntoView({behavior:'smooth',block:'center'});}
+ }
+ function loadTrack(){
+  const id=getTrack();if(!id||id===currentTrack)return;currentTrack=id;activeIndex=-1;
+  trackLabel.textContent=(document.querySelector('.track[data-track="'+id+'"] .track-title b')?.textContent||id).toUpperCase();
+  let saved=null;try{saved=localStorage.getItem(storageKey(id));}catch(_){}
+  lines=saved?parseLRC(saved):[];render();
+ }
+ fileInput.addEventListener('change',()=>{
+  const file=fileInput.files?.[0];if(!file)return;const id=getTrack();if(!id){status.textContent='PLAY A TRACK FIRST';return;}
+  const reader=new FileReader();reader.onload=()=>{const source=String(reader.result||''),parsed=parseLRC(source);if(!parsed.length){status.textContent='INVALID LRC FILE';return;}
+   try{localStorage.setItem(storageKey(id),source);}catch(_){status.textContent='BROWSER STORAGE FULL';}
+   currentTrack=id;lines=parsed;trackLabel.textContent=(document.querySelector('.track[data-track="'+id+'"] .track-title b')?.textContent||id).toUpperCase();render();};
+  reader.readAsText(file);fileInput.value='';
+ });
+ clear.addEventListener('click',()=>{if(!currentTrack)return;try{localStorage.removeItem(storageKey(currentTrack));}catch(_){}lines=[];render();});
+ document.querySelectorAll('.track').forEach(button=>button.addEventListener('click',()=>{currentTrack='';setTimeout(loadTrack,0);}));
+ audio.addEventListener('loadedmetadata',loadTrack);audio.addEventListener('timeupdate',()=>{if(!currentTrack)loadTrack();sync();});audio.addEventListener('play',loadTrack);
+ loadTrack();
+})();
