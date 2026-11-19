@@ -20,3 +20,10 @@
 @keyframes fxglitch{0%{text-shadow:3px 0 #f0f,-3px 0 #0ff;transform:translateX(-3px)}50%{text-shadow:-3px 0 #f0f,3px 0 #0ff;transform:translateX(3px)}100%{text-shadow:none;transform:none}}
 @media (prefers-reduced-motion:reduce){.fx-wipe,.fx-shake,.fx-disco,.fx-glitch{animation:none}}
 @media (max-width:700px){.fx-dock{top:auto;bottom:76px;transform:none;flex-direction:row;padding:6px 10px}.fx-dock input{transform:none;margin:0;width:70px}}
+
+/* Adegan transisi sinematik: adegan lama disembunyikan */
+.theme-transition{display:none!important}
+.cx{position:fixed;inset:0;z-index:10000;pointer-events:none;overflow:hidden;display:grid;place-items:center;color:#fff}
+.cx *{position:absolute;box-sizing:border-box}
+.cx-cap{left:0;right:0;bottom:9%;text-align:center;font:700 clamp(10px,1.6vw,15px) 'Space Grotesk',sans-serif;letter-spacing:.4em;text-shadow:0 2px 18px #000;white-space:nowrap}
+.cx img{max-width:none}
