@@ -645,3 +645,101 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
  });
  updateVault();
 })();
+
+/* Danieru Multiverse Room — quest log, XP and achievements */
+(()=>{
+ const room=document.querySelector('#dxMultiverseRoom'),launcher=document.querySelector('#dxRoomLauncher');
+ if(!room||!launcher)return;
+ const $=selector=>room.querySelector(selector);
+ const QUESTS=[
+  ['first-theme','World Hopper','Ganti tema website minimal satu kali.',40],
+  ['character-call','Summoner','Panggil salah satu karakter dari Character Hub.',60],
+  ['arcade-visit','Arcade Explorer','Buka salah satu mini game.',50],
+  ['project-view','Art Appreciator','Buka detail salah satu karya.',50],
+  ['secret-found','Secret Hunter','Temukan minimal satu Easter Egg.',80],
+  ['social-visit','Signal Sent','Kunjungi salah satu tautan sosial.',30],
+  ['contact-visit','Say Hello','Jelajahi bagian kontak.',40]
+ ];
+ const ACHIEVEMENTS=[
+  ['first','🌱','First Steps','Selesaikan misi pertamamu.'],
+  ['worlds','🧭','World Explorer','Buka semua tiga universe.'],
+  ['character','✦','Character Collector','Buka Character Hub.'],
+  ['arcade','🎮','Arcade Regular','Mainkan mini game.'],
+  ['secret','🔎','Curiosity Wins','Temukan Easter Egg.'],
+  ['project','🎨','Art Appreciator','Lihat detail karya.'],
+  ['social','📡','Connected','Kunjungi tautan sosial.'],
+  ['all','🏆','Quest Master','Selesaikan seluruh tujuh misi.']
+ ];
+ let state={quests:[],worlds:[],signals:[]};
+ try{const saved=JSON.parse(localStorage.getItem('dx-multiverse-progress')||'{}');if(saved&&typeof saved==='object')state=Object.assign(state,saved);}catch(error){}
+ const unique=(arr,key)=>arr.includes(key)?arr:[...arr,key];
+ const done=key=>state.quests.includes(key);
+ const signal=key=>state.signals.includes(key);
+ const save=()=>{try{localStorage.setItem('dx-multiverse-progress',JSON.stringify(state));}catch(error){}};
+ const $points={'first-theme':40,'character-call':60,'arcade-visit':50,'project-view':50,'secret-found':80,'social-visit':30,'contact-visit':40};
+ const questList=$('#dxQuestList'),achievementGrid=$('#dxAchievementGrid');
+ const xpTotal=$('#dxXpTotal'),xpBar=$('#dxXpBar'),progress=$('#dxQuestProgress'),badge=$('#dxQuestBadge'),launcherProgress=$('#dxLauncherProgress');
+ function unlocked(){
+  return {
+   first:state.quests.length>0,
+   worlds:['onepiece','spider','zio'].every(key=>state.worlds.includes(key)),
+   character:signal('character'),arcade:signal('arcade'),secret:signal('secret'),
+   project:signal('project'),social:signal('social'),
+   all:QUESTS.every(q=>done(q[0]))
+  };
+ }
+ function render(){
+  const total=state.quests.reduce((sum,key)=>sum+($points[key]||0),0);
+  const count=QUESTS.filter(q=>done(q[0])).length;
+  if(questList)questList.innerHTML=QUESTS.map(q=>'<article class="dx-quest '+(done(q[0])?'done':'')+'"><i>'+(done(q[0])?'✓':'·')+'</i><div><b>'+q[1]+'</b><small>'+q[2]+'</small></div><em>'+(done(q[0])?'COMPLETED':'+'+q[3]+' XP')+'</em></article>').join('');
+  if(xpTotal)xpTotal.textContent=total+' XP';
+  if(xpBar)xpBar.style.width=(count/QUESTS.length*100)+'%';
+  if(progress)progress.textContent=count+' / '+QUESTS.length;
+  if(badge)badge.textContent=count+'/'+QUESTS.length;
+  if(launcherProgress)launcherProgress.textContent=count+'/'+QUESTS.length;
+  const status=unlocked();
+  if(achievementGrid)achievementGrid.innerHTML=ACHIEVEMENTS.map(a=>'<article class="dx-achievement '+(status[a[0]]?'done':'')+'"><span>'+(status[a[0]]?a[1]:'🔒')+'</span><b>'+(status[a[0]]?a[2]:'Undiscovered')+'</b><small>'+(status[a[0]]?a[3]:'Selesaikan misi untuk membuka achievement ini.')+'</small></article>').join('');
+ }
+ function markSignal(key){state.signals=unique(state.signals,key);save();render();}
+ function award(key){
+  if(!$points[key]||done(key))return;
+  state.quests=unique(state.quests,key);save();render();
+  const toast=document.querySelector('#toast');
+  if(toast){toast.textContent='✦ QUEST COMPLETE · +'+$points[key]+' XP';toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),2600);}
+ }
+ function tab(name){
+  room.querySelectorAll('[data-room-tab]').forEach(button=>button.classList.toggle('active',button.dataset.roomTab===name));
+  room.querySelectorAll('[data-room-panel]').forEach(panel=>panel.hidden=panel.dataset.roomPanel!==name);
+ }
+ launcher.addEventListener('click',()=>{render();if(!room.open)room.showModal();});
+ $('#dxRoomClose')?.addEventListener('click',()=>room.close());
+ room.addEventListener('click',event=>{if(event.target===room)room.close();});
+ room.querySelectorAll('[data-room-tab]').forEach(button=>button.addEventListener('click',()=>tab(button.dataset.roomTab)));
+ room.querySelectorAll('[data-room-world]').forEach(button=>button.addEventListener('click',()=>{
+  const world=button.dataset.roomWorld;
+  if(!['onepiece','spider','zio'].includes(world))return;
+  state.worlds=unique(state.worlds,world);save();award('first-theme');
+  if(typeof window.applyTheme==='function')window.applyTheme(world,true);
+  render();
+ }));
+ $('#dxOpenRoster')?.addEventListener('click',()=>{markSignal('character');document.querySelector('#dxR')?.click();});
+ $('#dxOpenHub')?.addEventListener('click',()=>{markSignal('character');document.querySelector('#openCharacterHub')?.click();});
+ document.querySelector('#openCharacterHub')?.addEventListener('click',()=>{markSignal('character');award('character-call');});
+ document.querySelector('#themeButton')?.addEventListener('click',()=>award('first-theme'));
+ document.querySelectorAll('[data-theme-choice]').forEach(button=>button.addEventListener('click',()=>award('first-theme')));
+ document.querySelector('#openMemoryGame')?.addEventListener('click',()=>{markSignal('arcade');award('arcade-visit');});
+ document.addEventListener('click',event=>{
+  if(event.target.closest?.('.work-card')){markSignal('project');award('project-view');}
+  if(event.target.closest?.('.social-grid a')){markSignal('social');award('social-visit');}
+ });
+ document.querySelectorAll('a[href="#contact"]').forEach(link=>link.addEventListener('click',()=>award('contact-visit')));
+ const contact=document.querySelector('#contact');
+ if(contact&&'IntersectionObserver'in window){
+  const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting)award('contact-visit');}),{threshold:.2});
+  observer.observe(contact);
+ }
+ document.addEventListener('danieru:secret',()=>{markSignal('secret');award('secret-found');});
+ try{if(JSON.parse(localStorage.getItem('dx-eggs')||'[]').length){markSignal('secret');}}catch(error){}
+ document.querySelector('#dxG')?.addEventListener('click',()=>{markSignal('arcade');award('arcade-visit');});
+ render();tab('worlds');
+})();
