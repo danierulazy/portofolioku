@@ -566,9 +566,10 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
 (()=>{
  const vault=$('#easterVault'),list=$('#vaultList'),toast=$('#secretUnlockToast');
  if(!vault||!list||!toast)return;
- const keys=['logo','konami','luffy','spider','zio','credits'];
+ const keys=['logo','konami','luffy','spider','zio','credits','matrix','disco','danil','glitch','dot','minecraft','otaku','wajo','danieruch','creator'];
  const found=new Set();
- const labels={logo:"The Creator's Mark",konami:'Retro Player',luffy:'Grand Line Signal',spider:'Friendly Neighborhood',zio:'Time Administrator',credits:'Hidden Credits'};
+ try{JSON.parse(localStorage.getItem('dx-eggs')||'[]').forEach(key=>{if(keys.includes(key))found.add(key);});}catch(error){}
+ const labels={logo:"The Creator's Mark",konami:'Retro Player',luffy:'Grand Line Signal',spider:'Friendly Neighborhood',zio:'Time Administrator',credits:'Hidden Credits',matrix:'Cipher Rain',disco:'Disco Dimension',danil:'Danil’s Signature',glitch:'Glitch Protocol',dot:'Online Guardian',minecraft:'Block Builder',otaku:'Otaku Signal',wajo:'Wajo Spirit',danieruch:'Channel Transmission',creator:'Developer Terminal'};
  const count=$('#vaultCount'),bar=$('#vaultProgressBar'),name=$('#secretUnlockName');
  let toastTimer=null;
  function updateVault(){
@@ -583,6 +584,7 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
  function unlock(key){
   if(!keys.includes(key)||found.has(key))return;
   found.add(key);updateVault();
+  try{localStorage.setItem('dx-eggs',JSON.stringify([...found]));}catch(error){}
   if(name)name.textContent=labels[key];
   toast.classList.add('show');clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>toast.classList.remove('show'),5200);
@@ -598,6 +600,8 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
    const t=$('#toast');if(t){t.textContent='ALL SECRETS FOUND · DANIERU MASTER EXPLORER';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),4000);}
   }
  }
+
+ document.addEventListener('danieru:secret',event=>{const key=event.detail?.key;if(keys.includes(key))unlock(key);});
  $('#closeEasterVault')?.addEventListener('click',()=>vault.close());
  $('#vaultDone')?.addEventListener('click',()=>vault.close());
  $('#openVaultFromToast')?.addEventListener('click',openVault);
