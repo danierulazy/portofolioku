@@ -793,3 +793,12 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
 
  render();tab('worlds');
 })();
+
+/* Audio visualizer: animated bars respond to playback state without requesting microphone access. */
+(()=>{
+ const audio=document.querySelector('#audioPlayer'),viz=document.querySelector('#dxAudioVisualizer'),state=document.querySelector('#dxVizState');
+ if(!audio||!viz)return;
+ const set=(playing)=>{viz.classList.toggle('is-playing',playing);if(state)state.textContent=playing?'AUDIO SIGNAL DETECTED':'WAITING FOR MUSIC';};
+ audio.addEventListener('play',()=>set(true));audio.addEventListener('pause',()=>set(false));audio.addEventListener('ended',()=>set(false));
+ set(!audio.paused&&!audio.ended);
+})();
