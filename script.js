@@ -658,7 +658,8 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
   ['project-view','Art Appreciator','Buka detail salah satu karya.',50],
   ['secret-found','Secret Hunter','Temukan minimal satu Easter Egg.',80],
   ['social-visit','Signal Sent','Kunjungi salah satu tautan sosial.',30],
-  ['contact-visit','Say Hello','Jelajahi bagian kontak.',40]
+  ['contact-visit','Say Hello','Jelajahi bagian kontak.',40],
+  ['treasure-hunt','Treasure Hunter','Temukan seluruh sembilan harta tersembunyi.',120]
  ];
  const ACHIEVEMENTS=[
   ['first','🌱','First Steps','Selesaikan misi pertamamu.'],
@@ -668,15 +669,17 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
   ['secret','🔎','Curiosity Wins','Temukan Easter Egg.'],
   ['project','🎨','Art Appreciator','Lihat detail karya.'],
   ['social','📡','Connected','Kunjungi tautan sosial.'],
-  ['all','🏆','Quest Master','Selesaikan seluruh tujuh misi.']
+  ['treasure','🗝️','Treasure Keeper','Temukan seluruh sembilan harta tersembunyi.'],
+  ['daily','☀️','Daily Explorer','Selesaikan daily challenge.'],
+  ['all','🏆','Quest Master','Selesaikan seluruh delapan misi.']
  ];
- let state={quests:[],worlds:[],signals:[]};
+ let state={quests:[],worlds:[],signals:[],treasures:[],daily:{date:'',visited:[]},dailyXP:0};
  try{const saved=JSON.parse(localStorage.getItem('dx-multiverse-progress')||'{}');if(saved&&typeof saved==='object')state=Object.assign(state,saved);}catch(error){}
  const unique=(arr,key)=>arr.includes(key)?arr:[...arr,key];
  const done=key=>state.quests.includes(key);
  const signal=key=>state.signals.includes(key);
  const save=()=>{try{localStorage.setItem('dx-multiverse-progress',JSON.stringify(state));}catch(error){}};
- const $points={'first-theme':40,'character-call':60,'arcade-visit':50,'project-view':50,'secret-found':80,'social-visit':30,'contact-visit':40};
+ const $points={'first-theme':40,'character-call':60,'arcade-visit':50,'project-view':50,'secret-found':80,'social-visit':30,'contact-visit':40,'treasure-hunt':120};
  const questList=$('#dxQuestList'),achievementGrid=$('#dxAchievementGrid');
  const xpTotal=$('#dxXpTotal'),xpBar=$('#dxXpBar'),progress=$('#dxQuestProgress'),badge=$('#dxQuestBadge'),launcherProgress=$('#dxLauncherProgress');
  function unlocked(){
@@ -684,12 +687,12 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
    first:state.quests.length>0,
    worlds:['onepiece','spider','zio'].every(key=>state.worlds.includes(key)),
    character:signal('character'),arcade:signal('arcade'),secret:signal('secret'),
-   project:signal('project'),social:signal('social'),
+   project:signal('project'),social:signal('social'),treasure:state.treasures.length>=9,daily:!!state.daily?.claimed,
    all:QUESTS.every(q=>done(q[0]))
   };
  }
  function render(){
-  const total=state.quests.reduce((sum,key)=>sum+($points[key]||0),0);
+  const total=state.quests.reduce((sum,key)=>sum+($points[key]||0),0)+(state.dailyXP||0);
   const count=QUESTS.filter(q=>done(q[0])).length;
   if(questList)questList.innerHTML=QUESTS.map(q=>'<article class="dx-quest '+(done(q[0])?'done':'')+'"><i>'+(done(q[0])?'✓':'·')+'</i><div><b>'+q[1]+'</b><small>'+q[2]+'</small></div><em>'+(done(q[0])?'COMPLETED':'+'+q[3]+' XP')+'</em></article>').join('');
   if(xpTotal)xpTotal.textContent=total+' XP';
@@ -697,6 +700,10 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
   if(progress)progress.textContent=count+' / '+QUESTS.length;
   if(badge)badge.textContent=count+'/'+QUESTS.length;
   if(launcherProgress)launcherProgress.textContent=count+'/'+QUESTS.length;
+  const treasureCount=$('#dxTreasureCount'),treasureBadge=$('#dxTreasureBadge'),treasureBar=$('#dxTreasureBar');
+  if(treasureCount)treasureCount.textContent=state.treasures.length+' / 9 FOUND';
+  if(treasureBadge)treasureBadge.textContent=state.treasures.length+'/9';
+  if(treasureBar)treasureBar.style.width=(state.treasures.length/9*100)+'%';
   const status=unlocked();
   if(achievementGrid)achievementGrid.innerHTML=ACHIEVEMENTS.map(a=>'<article class="dx-achievement '+(status[a[0]]?'done':'')+'"><span>'+(status[a[0]]?a[1]:'🔒')+'</span><b>'+(status[a[0]]?a[2]:'Undiscovered')+'</b><small>'+(status[a[0]]?a[3]:'Selesaikan misi untuk membuka achievement ini.')+'</small></article>').join('');
  }
@@ -741,5 +748,48 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
  document.addEventListener('danieru:secret',()=>{markSignal('secret');award('secret-found');});
  try{if(JSON.parse(localStorage.getItem('dx-eggs')||'[]').length){markSignal('secret');}}catch(error){}
  document.querySelector('#dxG')?.addEventListener('click',()=>{markSignal('arcade');award('arcade-visit');});
+
+ /* Daily challenge: visit any three portfolio sections each local day. */
+ const dailyTitle=$('#dxDailyTitle'),dailyDesc=$('#dxDailyDescription'),dailyStatus=$('#dxDailyStatus'),dailyBar=$('#dxDailyBar'),dailyReward=$('#dxDailyReward');
+ const localDay=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');};
+ if(!state.daily||state.daily.date!==localDay())state.daily={date:localDay(),visited:[],claimed:false};
+ const dailySections=['home','about','identity','creatorDashboard','creativeAnalytics','work','skills','music','games','social','contact'];
+ const dailyRender=()=>{
+  const count=Math.min(3,state.daily.visited.length);
+  if(dailyTitle)dailyTitle.textContent='Three Stops Challenge';
+  if(dailyDesc)dailyDesc.textContent='Kunjungi tiga bagian website yang berbeda hari ini.';
+  if(dailyStatus)dailyStatus.textContent=count+' / 3';
+  if(dailyBar)dailyBar.style.width=(count/3*100)+'%';
+  if(dailyReward)dailyReward.textContent=state.daily.claimed?'COMPLETED · +60 XP':'+60 XP';
+ };
+ const dailyVisit=id=>{
+  if(state.daily.visited.includes(id)||state.daily.claimed)return;
+  state.daily.visited=unique(state.daily.visited,id);
+  if(state.daily.visited.length>=3){state.daily.claimed=true;state.dailyXP=(state.dailyXP||0)+60;save();markSignal('daily');}
+  save();dailyRender();render();
+  if(state.daily.claimed){const t=document.querySelector('#toast');if(t){t.textContent='☀ DAILY CHALLENGE COMPLETE · +60 XP';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}}
+ };
+ const sectionNodes=dailySections.map(id=>document.getElementById(id)).filter(Boolean);
+ if('IntersectionObserver'in window){
+  const dailyObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting)dailyVisit(entry.target.id);}),{threshold:.25});
+  sectionNodes.forEach(node=>dailyObserver.observe(node));
+ }
+ const clueText=['Cari di bagian pembuka perjalanan.','Lihat area profil kreator.','Periksa kartu identitas.','Jelajahi galeri karya.','Cari di area keahlian.','Dengarkan sudut musik.','Kunjungi area permainan.','Temukan area sosial.','Periksa bagian kontak.'];
+ const treasureNames=['First Spark','Profile Compass','Identity Seal','Creative Gem','Skill Crystal','Sound Token','Arcade Coin','Signal Badge','Final Key'];
+ const treasureList=$('#dxTreasureList'),clue=$('#dxTreasureClue');
+ const treasureRender=()=>{
+  if(treasureList)treasureList.innerHTML=treasureNames.map((name,i)=>'<div class="dx-treasure-item '+(state.treasures.includes(dailySections[i])?'found':'')+'"><span>'+(state.treasures.includes(dailySections[i])?'✦':'?')+'</span><b>'+(state.treasures.includes(dailySections[i])?name:'Unknown treasure')+'</b><small>'+(state.treasures.includes(dailySections[i])?'FOUND':'HIDDEN')+'</small></div>').join('');
+  if(clue){const next=state.treasures.length;clue.textContent=next>=9?'All treasures found. You are the Treasure Keeper.':'Clue '+String(next+1).padStart(2,'0')+' · '+clueText[next];}
+ };
+ document.querySelectorAll('[data-treasure]').forEach(button=>button.addEventListener('click',()=>{
+  const id=button.dataset.treasure;if(!dailySections.includes(id)||state.treasures.includes(id))return;
+  state.treasures=unique(state.treasures,id);button.classList.add('found');button.disabled=true;save();
+  const t=document.querySelector('#toast');if(t){t.textContent='✦ TREASURE FOUND · '+state.treasures.length+'/9';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
+  if(state.treasures.length>=9)award('treasure-hunt');
+  treasureRender();render();
+ }));
+ document.querySelectorAll('[data-treasure]').forEach(button=>{if(state.treasures.includes(button.dataset.treasure)){button.classList.add('found');button.disabled=true;}});
+ dailyRender();treasureRender();
+
  render();tab('worlds');
 })();
