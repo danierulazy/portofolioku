@@ -45,6 +45,8 @@ function applyTheme(theme,animate=true){
  const toast=$('#toast');
  if(toast){toast.textContent='Atmosfer: '+(selected?.querySelector('b')?.textContent||theme);toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1600);}
 }
+// Expose the theme controller so the optional enhancement layer can add cinematic effects.
+window.applyTheme=applyTheme;
 if(themeButton&&themePopover){
  themeButton.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();themePopover.hidden=!themePopover.hidden;});
  themePopover.addEventListener('click',event=>{
