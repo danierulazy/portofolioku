@@ -3,7 +3,7 @@
 'use strict';
 const $=(s,r=document)=>r.querySelector(s),B=document.body,R=document.documentElement;
 const ls={g:k=>{try{return localStorage.getItem(k)}catch(e){return null}},s:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
-const CH={matrix:['Cipher','Hacker dari balik layar','Semua pintu punya celah. Tinggal cari kodenya.','#19e36b','Ketik nama film hacker klasik itu.',0],disco:['Groove','Penguasa lantai dansa','Hidup lebih enak dengan beat.','#ff4fd8','Ketik tempat berdansa dengan bola kilau.',1],danil:['Danieru','Si pembuat dunia ini','Belajar sesuatu. Buat sesuatu.','#ffb703','Ketik nama panggilanmu.',2],glitch:['Glitch','Bug yang jadi teman','Error itu fitur yang belum dimengerti.','#00e5ff','Klik judul besar 3× dengan cepat.',3],dot:['Dotty','Penjaga status online','Selalu available, selalu hijau!','#35e08a','Klik titik hijau 5×.',4],konami:['Pixel','Pahlawan 8-bit','Tiga puluh nyawa sudah cukup.','#ff6a3d','Masukkan kode klasik di keyboard.',5],logo:['AD Prime','Bentuk akhir sang kreator','Satu logo, seribu cerita.','#ffd166','Klik dua kali logo AD.',6]};
+const CH={matrix:['Cipher','Hacker dari balik layar','Semua pintu punya celah. Tinggal cari kodenya.','#19e36b','Ketik nama film hacker klasik itu.',0],disco:['Groove','Penguasa lantai dansa','Hidup lebih enak dengan beat.','#ff4fd8','Ketik tempat berdansa dengan bola kilau.',1],danil:['Danieru','Si pembuat dunia ini','Belajar sesuatu. Buat sesuatu.','#ffb703','Ketik nama panggilanmu.',2],glitch:['Glitch','Bug yang jadi teman','Error itu fitur yang belum dimengerti.','#00e5ff','Klik judul besar 3× dengan cepat.',3],dot:['Dotty','Penjaga status online','Selalu available, selalu hijau!','#35e08a','Klik titik hijau 5×.',4],konami:['Pixel','Pahlawan 8-bit','Tiga puluh nyawa sudah cukup.','#ff6a3d','Masukkan kode klasik di keyboard.',5],logo:['AD Prime','Bentuk akhir sang kreator','Satu logo, seribu cerita.','#ffd166','Klik dua kali logo AD.',6],minecraft:['Blocky','Architect of tiny worlds','Satu blok bisa jadi dunia.','#7ad957','Ketik MINECRAFT.',2],otaku:['Otaku','Penjelajah cerita','Selalu ada dunia untuk dijelajahi.','#ef82c9','Ketik OTAKU.',1],wajo:['Wajo','Local creative spirit','Karya besar bisa lahir dari mana saja.','#55c8d8','Ketik WAJO.',3],danieruch:['DanieruCH','Creator transmission','Recording ideas. Sharing stories.','#ffb703','Ketik DANIERUCH.',6],creator:['The Architect','Master of this space','Selamat datang di balik layar.','#c5a7ff','Ketik CREATOR.',0]};
 let eq=ls.g('dx-eq')||'',own=[];try{own=JSON.parse(ls.g('dx-chars')||'[]')}catch(e){}
 const COL={dark:'#7c5cff',light:'#ffb703',onepiece:'#19a7ce',zio:'#ff2d9a',spider:'#e62429'};
 const calm=()=>matchMedia('(prefers-reduced-motion: reduce)').matches||/reduce/i.test(B.className+R.className);
@@ -210,10 +210,11 @@ if(st)new MutationObserver(()=>{if(st.classList.contains('show'))SFX.win()}).obs
 /* ---------- Easter egg baru (5) ---------- */
 const EG=JSON.parse(ls.g('dx-eggs')||'[]');
 function egg(k,msg){
- giveChar(k);
+ if(CH[k])giveChar(k);
+ document.dispatchEvent(new CustomEvent('danieru:secret',{detail:{key:k}}));
  if(!EG.includes(k)){EG.push(k);ls.s('dx-eggs',JSON.stringify(EG));}
  SFX.win();const t=$('#toast');
- if(t){t.textContent='✦ EGG '+EG.length+'/5 · '+msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
+ if(t){t.textContent='✦ EGG '+EG.length+'/16 · '+msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
 }
 function confetti(){const c=['#ff2d9a','#ffb703','#19a7ce','#7c5cff','#e62429'];for(let i=0;i<5;i++)setTimeout(()=>burst(innerWidth*(.2+i*.15),innerHeight*.35,18,c[i]),i*120)}
 function matrix(){
@@ -225,7 +226,12 @@ function matrix(){
 const CODES={
  matrix:()=>{matrix();egg('matrix','Wake up, Danieru…')},
  disco:()=>{R.classList.add('fx-disco');arp([392,523,659,784,659,523],.2,'square',.07,.1);egg('disco','Disco mode!');setTimeout(()=>R.classList.remove('fx-disco'),8000)},
- danil:()=>{confetti();egg('danil','Hai, Danil!')}
+ danil:()=>{confetti();egg('danil','Hai, Danil!')},
+ minecraft:()=>{confetti();egg('minecraft','Build your own world!')},
+ otaku:()=>{arp([440,554,659,880],.22,'triangle',.12,.09);egg('otaku','Otaku signal received!')},
+ wajo:()=>{confetti();egg('wajo','Salam dari Wajo!')},
+ danieruch:()=>{arp([392,494,587,784],.3,'triangle',.13,.1);egg('danieruch','Channel transmission received!')},
+ creator:()=>{openCreatorTerminal();egg('creator','Developer terminal unlocked!')}
 };
 let buf='';
 document.addEventListener('keydown',e=>{
@@ -235,4 +241,21 @@ document.addEventListener('keydown',e=>{
 });
 $('.hero h1')?.addEventListener('click',(()=>{let n=0,t;return()=>{n++;clearTimeout(t);t=setTimeout(()=>n=0,700);if(n>=3){n=0;const h=$('.hero h1');h.classList.add('fx-glitch');hiss(.4,2000,.15,300);setTimeout(()=>h.classList.remove('fx-glitch'),1200);egg('glitch','Glitch in the system')}}})());
 $('.status-dot')?.addEventListener('click',(()=>{let n=0;return()=>{if(++n>=5){n=0;confetti();egg('dot','Tetap available!')}}})());
+/* ---------- Hidden creator terminal ---------- */
+function openCreatorTerminal(){
+ let dlg=$('#creatorTerminal');if(!dlg)return;if(!dlg.open)dlg.showModal();
+ const input=$('#creatorTerminalInput'),out=$('#creatorTerminalOutput');input?.focus();
+}
+const terminal=$('#creatorTerminal'),termInput=$('#creatorTerminalInput'),termOutput=$('#creatorTerminalOutput');
+function terminalLine(value,kind='normal'){if(!termOutput)return;const line=document.createElement('p');line.className='terminal-line '+kind;line.textContent=value;termOutput.append(line);termOutput.scrollTop=termOutput.scrollHeight;}
+termInput?.addEventListener('keydown',event=>{
+ if(event.key!=='Enter')return;const command=termInput.value.trim().toLowerCase();termInput.value='';if(!command)return;terminalLine('danieru@creative-space:~$ '+command,'command');
+ const commands={help:()=>['COMMANDS: help · about · themes · secrets · arena · clear · exit'],about:()=>['AHMAD DANIL / DKV STUDENT / VISUAL CREATOR','Learn something. Make something.'],themes:()=>['AVAILABLE WORLDS: dark · light · onepiece · spider · zio'],secrets:()=>{ $('#easterVault')?.showModal();return ['Opening classified archive...'];},arena:()=>{ $('#dxG')?.click();return ['Launching Danieru Arena...'];},clear:()=>{termOutput.replaceChildren();return [];},exit:()=>{terminal.close();return ['Session closed.'];}};
+ if(commands[command]){commands[command]().forEach(line=>terminalLine(line,'response'));return;}
+ if(command.startsWith('theme ')){const theme=command.slice(6).trim();if(['dark','light','onepiece','spider','zio'].includes(theme)){window.applyTheme?.(theme,true);terminalLine('Theme switched to '+theme+'.','success');}else terminalLine('Unknown theme. Try: themes','error');return;}
+ terminalLine('Command not found. Type help for available commands.','error');
+ });
+ terminal?.querySelector('[data-terminal-close]')?.addEventListener('click',()=>terminal.close());
+ terminal?.addEventListener('click',event=>{if(event.target===terminal)terminal.close();});
+
 })();
