@@ -236,7 +236,7 @@ const CODES={
 let buf='';
 document.addEventListener('keydown',e=>{
  if(e.target.matches?.('input,textarea')||e.key.length!==1)return;
- buf=(buf+e.key.toLowerCase()).slice(-8);
+ buf=(buf+e.key.toLowerCase()).slice(-12);
  for(const k in CODES)if(buf.endsWith(k)){buf='';CODES[k]()}
 });
 $('.hero h1')?.addEventListener('click',(()=>{let n=0,t;return()=>{n++;clearTimeout(t);t=setTimeout(()=>n=0,700);if(n>=3){n=0;const h=$('.hero h1');h.classList.add('fx-glitch');hiss(.4,2000,.15,300);setTimeout(()=>h.classList.remove('fx-glitch'),1200);egg('glitch','Glitch in the system')}}})());
