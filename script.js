@@ -874,7 +874,7 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
  document.querySelectorAll('.track').forEach(button=>button.addEventListener('click',()=>{
   requestId++;currentTrack=button.dataset.track||'';lines=[];activeIndex=-1;const track=tracks[currentTrack];
   trackLabel.textContent=track?(track.title+' · '+track.artist).toUpperCase():'NO TRACK SELECTED';
-  empty('Ready for lyrics','Pilih lagu lalu tekan FIND LYRICS untuk mencari lirik.');status.textContent='READY TO SEARCH';find.disabled=false;find.textContent='⌕ FIND LYRICS';
+  empty('Searching lyrics…','Mencocokkan judul dan artis lagu secara otomatis.');status.textContent='SEARCHING LYRICS';find.disabled=false;find.textContent='⌕ FIND LYRICS';setTimeout(findLyrics,80);
  }));
  audio.addEventListener('timeupdate',sync);audio.addEventListener('seeked',sync);
  empty('Ready for lyrics','Pilih lagu lalu tekan FIND LYRICS untuk mencari lirik tersinkronisasi.');
