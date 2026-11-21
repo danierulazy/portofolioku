@@ -817,55 +817,65 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
 })();
 
 
-/* Synced lyrics: user-supplied LRC files only. */
+/* Automatic synced lyrics lookup. */
 (()=>{
- const audio=document.querySelector('#audioPlayer'),fileInput=document.querySelector('#dxLyricsFile');
- const body=document.querySelector('#dxLyricsBody'),clear=document.querySelector('#dxLyricsClear');
+ const audio=document.querySelector('#audioPlayer'),body=document.querySelector('#dxLyricsBody');
+ const clear=document.querySelector('#dxLyricsClear'),find=document.querySelector('#dxLyricsFind');
  const trackLabel=document.querySelector('#dxLyricsTrack'),status=document.querySelector('#dxLyricsStatus');
- if(!audio||!fileInput||!body)return;
- const keys=['song1','song2'];let currentTrack='',lines=[],activeIndex=-1;
- const storageKey=id=>'danieru-lyrics-v1-'+id;
- const getTrack=()=>{const src=audio.currentSrc||audio.src;return keys.find(key=>src.includes('/'+key+'.mp3'))||document.querySelector('.track.active')?.dataset.track||'';};
+ if(!audio||!body||!find)return;
+ const tracks={song1:{title:'Let Down',artist:'Radiohead'},song2:{title:'Impostor Syndrome',artist:'Sidney Gish'}};
+ let currentTrack='',lines=[],activeIndex=-1,requestId=0;
  const escapeHTML=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
  function parseLRC(source){
   const parsed=[];
-  source.replace(/^\uFEFF/,'').split(/\r?\n/).forEach(line=>{
+  String(source||'').replace(/^\uFEFF/,'').split(/\r?\n/).forEach(line=>{
    const tags=[...line.matchAll(/\[(\d{1,2}):(\d{2})(?:[.:](\d{1,3}))?\]/g)];
-   const lyric=line.replace(/\[[^\]]+\]/g,'').trim();
-   if(!lyric||!tags.length)return;
-   tags.forEach(tag=>{const fraction=tag[3]||'0';const ms=fraction.length===3?Number(fraction):fraction.length===2?Number(fraction)*10:Number(fraction)*100;parsed.push({time:Number(tag[1])*60+Number(tag[2])+ms/1000,text:lyric});});
-  });
-  return parsed.sort((a,b)=>a.time-b.time);
+   const lyric=line.replace(/\[[^\]]+\]/g,'').trim();if(!lyric||!tags.length)return;
+   tags.forEach(tag=>{const f=tag[3]||'0',ms=f.length===3?Number(f):f.length===2?Number(f)*10:Number(f)*100;parsed.push({time:Number(tag[1])*60+Number(tag[2])+ms/1000,text:lyric});});
+  });return parsed.sort((a,b)=>a.time-b.time);
  }
+ function empty(title,copy){body.innerHTML='<div class="dx-lyrics-empty"><span>♫</span><b>'+escapeHTML(title)+'</b><p>'+escapeHTML(copy)+'</p><small>AUTOMATIC SYNCED LYRICS</small></div>';clear.hidden=true;lines=[];activeIndex=-1;}
  function render(){
-  if(!lines.length){body.innerHTML='<div class="dx-lyrics-empty"><span>♫</span><b>Your lyrics space</b><p>Tambahkan file lirik berformat .LRC untuk menampilkan lirik yang berjalan mengikuti lagu.</p><small>File lirik disimpan hanya di browser perangkat ini.</small></div>';clear.hidden=true;status.textContent='NO LYRICS';return;}
-  body.innerHTML='<div class="dx-lyrics-lines">'+lines.map((line,index)=>'<button type="button" class="dx-lyric-line" data-lyric-index="'+index+'">'+escapeHTML(line.text)+'</button>').join('')+'</div>';
-  body.querySelectorAll('[data-lyric-index]').forEach(button=>button.addEventListener('click',()=>{const line=lines[Number(button.dataset.lyricIndex)];audio.currentTime=line.time;audio.play().catch(()=>{});}));
-  clear.hidden=false;status.textContent='LRC LOADED · '+lines.length+' LINES';activeIndex=-1;sync();
+  if(!lines.length){empty('Lyrics not found','Belum ada lirik tersinkronisasi yang cocok. Coba cari lagi nanti.');return;}
+  body.innerHTML='<div class="dx-lyrics-lines">'+lines.map((line,i)=>'<button type="button" class="dx-lyric-line" data-lyric-index="'+i+'">'+escapeHTML(line.text)+'</button>').join('')+'</div>';
+  body.querySelectorAll('[data-lyric-index]').forEach(button=>button.addEventListener('click',()=>{audio.currentTime=lines[Number(button.dataset.lyricIndex)].time;audio.play().catch(()=>{});}));
+  clear.hidden=false;status.textContent='SYNCED · '+lines.length+' LINES';activeIndex=-1;sync();
  }
  function sync(){
-  if(!lines.length)return;
-  let index=-1;for(let i=0;i<lines.length;i++){if(lines[i].time<=audio.currentTime)index=i;else break;}
-  if(index===activeIndex)return;
-  activeIndex=index;
-  const nodes=body.querySelectorAll('.dx-lyric-line');nodes.forEach((node,i)=>{node.classList.toggle('is-current',i===index);node.classList.toggle('is-past',i<index);});
-  if(index>=0){nodes[index]?.scrollIntoView({behavior:'smooth',block:'center'});}
+  if(!lines.length)return;let index=-1;
+  for(let i=0;i<lines.length;i++){if(lines[i].time<=audio.currentTime)index=i;else break;}
+  if(index===activeIndex)return;activeIndex=index;
+  const nodes=body.querySelectorAll('.dx-lyric-line');
+  nodes.forEach((node,i)=>{node.classList.toggle('is-current',i===index);node.classList.toggle('is-past',i<index);});
+  if(index>=0)nodes[index]?.scrollIntoView({behavior:'smooth',block:'center'});
  }
- function loadTrack(){
-  const id=getTrack();if(!id||id===currentTrack)return;currentTrack=id;activeIndex=-1;
-  trackLabel.textContent=(document.querySelector('.track[data-track="'+id+'"] .track-title b')?.textContent||id).toUpperCase();
-  let saved=null;try{saved=localStorage.getItem(storageKey(id));}catch(_){}
-  lines=saved?parseLRC(saved):[];render();
+ function trackId(){const src=audio.currentSrc||audio.src;return src.includes('/song1.mp3')?'song1':src.includes('/song2.mp3')?'song2':document.querySelector('.track.active')?.dataset.track||'';}
+ async function findLyrics(){
+  const id=trackId(),track=tracks[id];if(!track){status.textContent='SELECT A TRACK FIRST';return;}
+  const request=++requestId;currentTrack=id;trackLabel.textContent=(track.title+' · '+track.artist).toUpperCase();
+  find.disabled=true;find.textContent='SEARCHING…';status.textContent='SEARCHING LYRICS';empty('Searching lyrics…','Mencocokkan judul, artis, dan durasi lagu.');
+  try{
+   const url=new URL('https://lrclib.net/api/search');url.searchParams.set('q',track.title+' '+track.artist);
+   const response=await fetch(url.toString(),{headers:{Accept:'application/json'}});
+   if(!response.ok)throw new Error('Lyrics service HTTP '+response.status);
+   const results=await response.json();if(request!==requestId)return;
+   const norm=v=>String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+   const matches=(Array.isArray(results)?results:[]).filter(item=>norm(item.trackName||item.name)===norm(track.title)&&norm(item.artistName)===norm(track.artist)&&item.syncedLyrics);
+   const duration=Number.isFinite(audio.duration)?audio.duration:0;
+   matches.sort((a,b)=>{const da=duration&&Number.isFinite(a.duration)?Math.abs(a.duration-duration):9999;const db=duration&&Number.isFinite(b.duration)?Math.abs(b.duration-duration):9999;return da-db;});
+   const chosen=matches.find(item=>!duration||!Number.isFinite(item.duration)||Math.abs(item.duration-duration)<=12)||matches[0];
+   if(!chosen)throw new Error('No synced match');lines=parseLRC(chosen.syncedLyrics);if(!lines.length)throw new Error('Empty lyrics');
+   status.textContent='LRCLIB · MATCHED';render();
+  }catch(error){if(request!==requestId)return;console.warn('Lyrics lookup failed:',error);empty('Lyrics unavailable','Pencarian otomatis belum menemukan hasil yang cocok. Coba lagi nanti.');status.textContent='NO MATCH · RETRY AVAILABLE';}
+  finally{if(request===requestId){find.disabled=false;find.textContent='↻ FIND AGAIN';}}
  }
- fileInput.addEventListener('change',()=>{
-  const file=fileInput.files?.[0];if(!file)return;const id=getTrack();if(!id){status.textContent='PLAY A TRACK FIRST';return;}
-  const reader=new FileReader();reader.onload=()=>{const source=String(reader.result||''),parsed=parseLRC(source);if(!parsed.length){status.textContent='INVALID LRC FILE';return;}
-   try{localStorage.setItem(storageKey(id),source);}catch(_){status.textContent='BROWSER STORAGE FULL';}
-   currentTrack=id;lines=parsed;trackLabel.textContent=(document.querySelector('.track[data-track="'+id+'"] .track-title b')?.textContent||id).toUpperCase();render();};
-  reader.readAsText(file);fileInput.value='';
- });
- clear.addEventListener('click',()=>{if(!currentTrack)return;try{localStorage.removeItem(storageKey(currentTrack));}catch(_){}lines=[];render();});
- document.querySelectorAll('.track').forEach(button=>button.addEventListener('click',()=>{currentTrack='';setTimeout(loadTrack,0);}));
- audio.addEventListener('loadedmetadata',loadTrack);audio.addEventListener('timeupdate',()=>{if(!currentTrack)loadTrack();sync();});audio.addEventListener('play',loadTrack);
- loadTrack();
-})();
+ find.addEventListener('click',findLyrics);
+ clear?.addEventListener('click',()=>{requestId++;lines=[];empty('Lyrics cleared','Tekan FIND LYRICS untuk mencari kembali.');status.textContent='CLEARED';});
+ document.querySelectorAll('.track').forEach(button=>button.addEventListener('click',()=>{
+  requestId++;currentTrack=button.dataset.track||'';lines=[];activeIndex=-1;const track=tracks[currentTrack];
+  trackLabel.textContent=track?(track.title+' · '+track.artist).toUpperCase():'NO TRACK SELECTED';
+  empty('Ready for lyrics','Pilih lagu lalu tekan FIND LYRICS untuk mencari lirik.');status.textContent='READY TO SEARCH';find.disabled=false;find.textContent='⌕ FIND LYRICS';
+ }));
+ audio.addEventListener('timeupdate',sync);audio.addEventListener('seeked',sync);
+ empty('Ready for lyrics','Pilih lagu lalu tekan FIND LYRICS untuk mencari lirik tersinkronisasi.');
+})();;
