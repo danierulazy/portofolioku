@@ -45,3 +45,21 @@
  .dx-music-view[data-music-panel="local"]>.dx-lyrics-card .dx-lyrics-empty{min-height:245px}
  .dx-music-view[data-music-panel="local"]>.dx-lyrics-card .dx-lyrics-lines{padding:32px 18px}
 }
+
+
+/* Keep the toolbox control in the top navigation, not over page content */
+.fp-launcher-inline{
+ position:relative!important;inset:auto!important;z-index:2!important;
+ flex:0 0 auto;white-space:nowrap;margin-left:2px;
+ padding:10px 13px!important;transform:none!important;
+}
+.fp-launcher-inline:hover,.fp-launcher-inline.is-open{transform:translateY(-1px)!important}
+@media(max-width:900px){
+ .fp-launcher-inline{padding:9px 10px!important;gap:6px!important}
+ .fp-launcher-inline b{font-size:8px}
+}
+@media(max-width:620px){
+ .fp-launcher-inline{padding:8px!important;width:34px;height:34px;justify-content:center}
+ .fp-launcher-inline b{display:none}
+ .fp-launcher-inline>span{font-size:16px}
+}
