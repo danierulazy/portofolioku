@@ -7,3 +7,41 @@
 .fp-focus .sidebar,.fp-focus .topbar,.fp-focus .ambient,.fp-focus .fp-launcher{opacity:.13;transition:opacity .25s}.fp-focus .sidebar:hover,.fp-focus .topbar:hover,.fp-focus .fp-launcher:hover{opacity:1}.fp-focus .main{filter:saturate(.86)}.fp-ambient-off .ambient{display:none!important}.fp-compact .section{padding-top:55px!important;padding-bottom:55px!important}.fp-compact .work-grid{gap:12px!important}.fp-compact .work-card{transform:none!important}.fp-spotlight{outline:2px solid var(--accent,#ff4d5a)!important;outline-offset:7px;box-shadow:0 0 45px color-mix(in srgb,var(--accent,#ff4d5a) 30%,transparent)!important}
 .fp-shortcuts{width:min(420px,calc(100vw - 30px));padding:22px;border:1px solid #ffffff25;border-radius:16px;background:#11131bf2;color:#fff;font-family:'DM Sans',sans-serif}.fp-shortcuts::backdrop{background:#000a;backdrop-filter:blur(7px)}.fp-shortcuts-head{display:flex;align-items:center;justify-content:space-between;font:700 18px 'Space Grotesk',sans-serif}.fp-shortcuts p{display:flex;align-items:center;gap:6px;font-size:12px;color:#ddd}.fp-shortcuts kbd{padding:3px 6px;border:1px solid #ffffff35;border-radius:5px;background:#ffffff10}.fp-shortcuts small{color:#999;font-size:10px}.fp-toast{position:fixed;z-index:10030;left:50%;bottom:28px;transform:translate(-50%,12px);padding:11px 16px;border:1px solid #ffffff25;border-radius:999px;background:#151720;color:#fff;font:600 11px 'DM Sans',sans-serif;opacity:0;pointer-events:none;transition:.2s;box-shadow:0 10px 30px #0008}.fp-toast.show{opacity:1;transform:translate(-50%,0)}body.fp-focus .fp-panel,body.fp-focus .fp-backtop{opacity:1}
 @media(max-width:600px){.fp-launcher{right:12px;bottom:12px;padding:11px 13px}.fp-panel{right:8px;bottom:68px;width:calc(100vw - 16px);max-height:82vh;padding:14px}.fp-panel-grid{grid-template-columns:1fr}.fp-tool-wide{grid-column:auto}.fp-panel-foot{align-items:flex-start;flex-direction:column}.fp-backtop{right:16px;bottom:69px}}@media(prefers-reduced-motion:reduce){.fp-launcher,.fp-backtop,.fp-tool button,.fp-panel{transition:none!important}}@media print{.sidebar,.topbar,.fp-launcher,.fp-panel,.fp-backtop,.fp-reading-progress,.ambient,.scroll-cue,.dx-room-launcher{display:none!important}.main{margin:0!important}.section{break-inside:avoid}}
+
+/* Music Space refinement — give synchronized lyrics the full stage */
+.dx-music-view[data-music-panel="local"]>.dx-lyrics-card{
+ grid-column:1/-1;
+ width:100%;
+ min-width:0;
+ margin-top:0;
+ padding:clamp(20px,3vw,30px);
+ border-radius:16px;
+ background:
+  radial-gradient(ellipse at 8% 5%,color-mix(in srgb,var(--accent,#e7b64a) 9%,transparent),transparent 38%),
+  radial-gradient(ellipse at 92% 95%,rgba(72,155,190,.10),transparent 42%),
+  color-mix(in srgb,var(--panel) 90%,transparent);
+}
+.dx-music-view[data-music-panel="local"]>.dx-lyrics-card .dx-lyrics-head{margin-bottom:18px}
+.dx-music-view[data-music-panel="local"]>.dx-lyrics-card .dx-lyrics-head h4{font-size:clamp(22px,2.4vw,30px)}
+.dx-music-view[data-music-panel="local"]>.dx-lyrics-card .dx-lyrics-body{
+ min-height:clamp(280px,32vw,390px);
+ max-height:460px;
+ border:1px solid color-mix(in srgb,var(--line) 75%,transparent);
+ background:
+  radial-gradient(ellipse at 50% 0%,color-mix(in srgb,var(--accent,#e7b64a) 8%,transparent),transparent 58%),
+  linear-gradient(145deg,color-mix(in srgb,var(--bg) 93%,transparent),color-mix(in srgb,var(--panel) 78%,transparent));
+}
+.dx-music-view[data-music-panel="local"]>.dx-lyrics-card .dx-lyrics-empty{min-height:280px}
+.dx-music-view[data-music-panel="local"]>.dx-lyrics-card .dx-lyrics-lines{
+ width:min(100%,900px);
+ margin:0 auto;
+ padding:clamp(38px,5vw,64px) clamp(18px,7vw,90px);
+}
+.dx-music-view[data-music-panel="local"]>.dx-lyrics-card .dx-lyric-line{font-size:clamp(17px,2.15vw,25px);padding:10px 0}
+.dx-music-view[data-music-panel="local"]>.dx-lyrics-card .dx-lyrics-foot{margin-top:15px}
+@media(max-width:700px){
+ .dx-music-view[data-music-panel="local"]>.dx-lyrics-card{grid-column:1/-1;padding:16px}
+ .dx-music-view[data-music-panel="local"]>.dx-lyrics-card .dx-lyrics-body{min-height:245px;max-height:360px}
+ .dx-music-view[data-music-panel="local"]>.dx-lyrics-card .dx-lyrics-empty{min-height:245px}
+ .dx-music-view[data-music-panel="local"]>.dx-lyrics-card .dx-lyrics-lines{padding:32px 18px}
+}
