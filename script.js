@@ -841,8 +841,9 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
   body.querySelectorAll('[data-lyric-index]').forEach(button=>button.addEventListener('click',()=>{audio.currentTime=lines[Number(button.dataset.lyricIndex)].time;audio.play().catch(()=>{});}));
   clear.hidden=false;status.textContent='SYNCED · '+lines.length+' LINES';activeIndex=-1;sync();
  }
+ function publishMusicState(){window.DanieruMusicState={track:currentTrack,lines:lines.map(line=>({time:line.time,text:line.text})),time:audio.currentTime||0,paused:audio.paused};window.dispatchEvent(new Event('danieru:music-state'));}
  function sync(){
-  if(!lines.length)return;let index=-1;
+  publishMusicState();if(!lines.length)return;let index=-1;
   for(let i=0;i<lines.length;i++){if(lines[i].time<=audio.currentTime)index=i;else break;}
   if(index===activeIndex)return;activeIndex=index;
   const nodes=body.querySelectorAll('.dx-lyric-line');
@@ -865,7 +866,7 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
    matches.sort((a,b)=>{const da=duration&&Number.isFinite(a.duration)?Math.abs(a.duration-duration):9999;const db=duration&&Number.isFinite(b.duration)?Math.abs(b.duration-duration):9999;return da-db;});
    const chosen=matches.find(item=>!duration||!Number.isFinite(item.duration)||Math.abs(item.duration-duration)<=12)||matches[0];
    if(!chosen)throw new Error('No synced match');lines=parseLRC(chosen.syncedLyrics);if(!lines.length)throw new Error('Empty lyrics');
-   status.textContent='LRCLIB · MATCHED';render();
+   status.textContent='LRCLIB · MATCHED';publishMusicState();render();
   }catch(error){if(request!==requestId)return;console.warn('Lyrics lookup failed:',error);empty('Lyrics unavailable','Pencarian otomatis belum menemukan hasil yang cocok. Coba lagi nanti.');status.textContent='NO MATCH · RETRY AVAILABLE';}
   finally{if(request===requestId){find.disabled=false;find.textContent='↻ FIND AGAIN';}}
  }
@@ -876,6 +877,6 @@ const sections=$$('main .section');const observer=new IntersectionObserver(entri
   trackLabel.textContent=track?(track.title+' · '+track.artist).toUpperCase():'NO TRACK SELECTED';
   empty('Searching lyrics…','Mencocokkan judul dan artis lagu secara otomatis.');status.textContent='SEARCHING LYRICS';find.disabled=false;find.textContent='⌕ FIND LYRICS';setTimeout(findLyrics,80);
  }));
- audio.addEventListener('timeupdate',sync);audio.addEventListener('seeked',sync);
- empty('Ready for lyrics','Pilih lagu lalu tekan FIND LYRICS untuk mencari lirik tersinkronisasi.');
+ audio.addEventListener('timeupdate',sync);audio.addEventListener('seeked',sync);audio.addEventListener('play',publishMusicState);audio.addEventListener('pause',publishMusicState);audio.addEventListener('loadedmetadata',publishMusicState);
+ empty('Ready for lyrics','Pilih lagu lalu tekan FIND LYRICS untuk mencari lirik tersinkronisasi.');publishMusicState();
 })();;
