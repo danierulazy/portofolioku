@@ -8,7 +8,7 @@
  const progress=document.createElement('div');progress.className='fp-reading-progress';progress.innerHTML='<i></i>';document.body.append(progress);
  const progressBar=$('i',progress),updateProgress=()=>{const max=document.documentElement.scrollHeight-innerHeight;progressBar.style.width=(max>0?Math.min(100,scrollY/max*100):0)+'%'};
  addEventListener('scroll',updateProgress,{passive:true});addEventListener('resize',updateProgress);updateProgress();
- const launcher=document.createElement('button');launcher.className='fp-launcher';launcher.type='button';launcher.setAttribute('aria-label','Buka Creative Toolbox');launcher.setAttribute('aria-expanded','false');launcher.innerHTML='<span>✦</span><b>TOOLBOX</b>';document.body.append(launcher);
+ const launcher=document.createElement('button');launcher.className='fp-launcher';launcher.type='button';launcher.setAttribute('aria-label','Buka Creative Toolbox');launcher.setAttribute('aria-expanded','false');launcher.innerHTML='<span>✦</span><b>TOOLBOX</b>';const launcherHost=document.querySelector('.top-actions');if(launcherHost){launcher.classList.add('fp-launcher-inline');launcherHost.append(launcher)}else{document.body.append(launcher)}
  const panel=document.createElement('section');panel.className='fp-panel';panel.hidden=true;panel.setAttribute('aria-label','Danieru Creative Toolbox');
  panel.innerHTML='<header class="fp-panel-head"><div><small>DANIERU SPACE / EXTRA TOOLS</small><h2>Creative <em>toolbox.</em></h2></div><button type="button" data-close aria-label="Tutup toolbox">×</button></header>'+
  '<div class="fp-panel-grid">'+
